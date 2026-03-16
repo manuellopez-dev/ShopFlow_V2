@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% block title %}Mi Perfil — ShopFlow{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Mi Perfil</h1>
+</div>
+
+<div style="display:grid; grid-template-columns:300px 1fr; gap:1.75rem; align-items:start;">
+
+  <!-- ─── Sidebar perfil ───────────────────────────── -->
+  <div style="display:flex; flex-direction:column; gap:1.25rem;">
+
+    <!-- Avatar y nombre -->
+    <div class="card" style="text-align:center; padding:2rem 1.5rem;">
+      <div style="width:80px; height:80px; background:var(--primary); border-radius:50%;
+                  display:flex; align-items:center; justify-content:center;
+                  margin:0 auto 1rem; font-size:2rem; font-weight:800;
+                  color:white; font-family:'Plus Jakarta Sans',sans-serif;
+                  box-shadow:var(--shadow-blue);">
+        {{ me.name[0].upper() }}
+      </div>
+      <h2 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:1.1rem;
+                 font-weight:700; margin-bottom:4px;">{{ me.name }}</h2>
+      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1rem;">{{ me.email }}</p>
+      <span class="badge-role role-{{ me.role }}">{{ me.role }}</span>
+      <div style="margin-top:1rem; padding-top:1rem; border-top:1px solid var(--border);
+                  font-size:0.78rem; color:var(--text-muted);">
+        <i data-lucide="calendar" style="width:13px;height:13px;vertical-align:middle;"></i>
+        Miembro desde {{ me.created_at.strftime('%B %Y') if me.created_at else '2026' }}
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="card" style="padding:1.25rem;">
+      <h3 style="font-size:0.72rem; font-weight:700; text-transform:uppercase;
+                 letter-spacing:0.6px; color:var(--text-muted); margin-bottom:1rem;">
+        Estadísticas
+      </h3>
+      <div style="display:flex; flex-direction:column; gap:0.85rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; align-items:center; gap:8px; color:var(--text-muted); font-size:0.875rem;">
+            <i data-lucide="package" style="width:15px;height:15px;"></i>
+            Pedidos
+          </div>
+          <strong>{{ total_orders }}</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; align-items:center; gap:8px; color:var(--text-muted); font-size:0.875rem;">
+            <i data-lucide="check-circle" style="width:15px;height:15px;"></i>
+            Entregados
+          </div>
+          <strong style="color:var(--success);">{{ delivered }}</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; align-items:center; gap:8px; color:var(--text-muted); font-size:0.875rem;">
+            <i data-lucide="dollar-sign" style="width:15px;height:15px;"></i>
+            Total gastado
+          </div>
+          <strong>${{ "%.0f"|format(total_spent) }}</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; align-items:center; gap:8px; color:var(--text-muted); font-size:0.875rem;">
+            <i data-lucide="star" style="width:15px;height:15px;"></i>
+            Reseñas
+          </div>
+          <strong>{{ total_reviews }}</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; align-items:center; gap:8px; color:var(--text-muted); font-size:0.875rem;">
+            <i data-lucide="heart" style="width:15px;height:15px;"></i>
+            Favoritos
+          </div>
+          <strong>{{ total_favorites }}</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Links rápidos -->
+    <div class="card" style="padding:1rem;">
+      <h3 style="font-size:0.72rem; font-weight:700; text-transform:uppercase;
+                 letter-spacing:0.6px; color:var(--text-muted); margin-bottom:0.75rem;">
+        Accesos rápidos
+      </h3>
+      <div style="display:flex; flex-direction:column; gap:4px;">
+        <a href="{{ url_for('client.my_orders') }}" class="cat-filter-link">
+          <i data-lucide="clipboard-list" style="width:14px;height:14px;"></i>
+          Mis pedidos
+        </a>
+        <a href="{{ url_for('reviews.my_favorites') }}" class="cat-filter-link">
+          <i data-lucide="heart" style="width:14px;height:14px;"></i>
+          Mis favoritos
+        </a>
+        <a href="{{ url_for('client.catalog') }}" class="cat-filter-link">
+          <i data-lucide="grid" style="width:14px;height:14px;"></i>
+          Catálogo
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Formularios ──────────────────────────────── -->
+  <div style="display:flex; flex-direction:column; gap:1.25rem;">
+
+    <!-- Editar información -->
+    <div class="card">
+      <h3 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:1rem; font-weight:700;
+                 margin-bottom:1.5rem; display:flex; align-items:center; gap:8px;">
+        <i data-lucide="user-cog" style="width:18px;height:18px; stroke:var(--primary);"></i>
+        Información personal
+      </h3>
+      <form method="POST">
+        <input type="hidden" name="action" value="update_info">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <div class="form-group">
+            <label>Nombre completo</label>
+            <input type="text" name="name" value="{{ me.name }}" required>
+          </div>
+          <div class="form-group">
+            <label>Correo electrónico</label>
+            <input type="email" name="email" value="{{ me.email }}" required>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary">
+          <i data-lucide="save" style="width:14px;height:14px;"></i>
+          Guardar cambios
+        </button>
+      </form>
+    </div>
+
+    <!-- Cambiar contraseña -->
+    <div class="card">
+      <h3 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:1rem; font-weight:700;
+                 margin-bottom:1.5rem; display:flex; align-items:center; gap:8px;">
+        <i data-lucide="lock" style="width:18px;height:18px; stroke:var(--primary);"></i>
+        Cambiar contraseña
+      </h3>
+      <form method="POST">
+        <input type="hidden" name="action" value="change_password">
+        <div class="form-group">
+          <label>Contraseña actual</label>
+          <input type="password" name="current_password" required>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <div class="form-group">
+            <label>Nueva contraseña</label>
+            <input type="password" name="new_password" required minlength="8">
+          </div>
+          <div class="form-group">
+            <label>Confirmar contraseña</label>
+            <input type="password" name="confirm_password" required>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-outline">
+          <i data-lucide="shield-check" style="width:14px;height:14px;"></i>
+          Actualizar contraseña
+        </button>
+      </form>
+    </div>
+
+    <!-- Seguridad 2FA (solo admin) -->
+    {% if me.is_admin() %}
+    <div class="card" style="border:1.5px solid #bfdbfe;">
+      <h3 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:1rem; font-weight:700;
+                 margin-bottom:0.75rem; display:flex; align-items:center; gap:8px;">
+        <i data-lucide="shield" style="width:18px;height:18px; stroke:var(--primary);"></i>
+        Autenticación de doble factor
+      </h3>
+      <p style="color:var(--text-muted); font-size:0.875rem; margin-bottom:1rem;">
+        Protege tu cuenta con una capa extra de seguridad usando una app de autenticación.
+      </p>
+      <a href="{{ url_for('auth.setup_2fa') }}" class="btn btn-primary btn-sm">
+        <i data-lucide="smartphone" style="width:14px;height:14px;"></i>
+        Configurar 2FA
+      </a>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,304 @@
+{% extends "base.html" %}
+{% block title %}Documentación API — ShopFlow{% endblock %}
+
+{% block content %}
+<div class="docs-layout">
+
+  <aside class="docs-sidebar">
+    <div class="card">
+      <div style="font-size:0.72rem; font-weight:700; text-transform:uppercase;
+                  letter-spacing:0.6px; color:var(--text-muted); margin-bottom:0.75rem;">
+        Contenido
+      </div>
+      <nav>
+        <a href="#intro"     class="doc-nav-link">Introducción</a>
+        <a href="#roles"     class="doc-nav-link">Roles de usuario</a>
+        <a href="#registro"  class="doc-nav-link">Registro y login</a>
+        <a href="#cliente"   class="doc-nav-link">Guía del cliente</a>
+        <a href="#vendedor"  class="doc-nav-link">Guía del vendedor</a>
+        <a href="#admin"     class="doc-nav-link">Guía del admin</a>
+        <a href="#seguridad" class="doc-nav-link">Seguridad</a>
+        <a href="#pagos"     class="doc-nav-link">Pagos</a>
+        <a href="#faq"       class="doc-nav-link">Preguntas frecuentes</a>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- ─── Contenido ───────────────────────────────── -->
+  <div style="min-width:0;">
+
+    <!-- Intro -->
+    <div class="card" style="margin-bottom:1.5rem;" id="intro">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:1.25rem;">
+        <div style="width:40px; height:40px; background:var(--primary-light);
+                    border-radius:var(--radius); display:flex; align-items:center; justify-content:center;">
+          <i data-lucide="book-open" style="width:20px;height:20px;stroke:var(--primary);"></i>
+        </div>
+        <h1 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:1.5rem;
+                   font-weight:800; letter-spacing:-0.5px;">Documentación API</h1>
+      </div>
+      <p style="color:var(--text-muted); line-height:1.7; margin-bottom:1rem;">
+        ShopFlow usa autenticación basada en <strong>JWT (JSON Web Tokens)</strong> con cookies HTTP-only.
+        Todas las rutas protegidas requieren una sesión activa.
+      </p>
+      <div style="background:var(--surface2); border-radius:var(--radius); padding:1rem;
+                  border-left:3px solid var(--primary);">
+        <div style="font-size:0.75rem; font-weight:700; color:var(--primary);
+                    text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">
+          Base URL
+        </div>
+        <code style="font-size:0.875rem; color:var(--text);">http://localhost:5000</code>
+      </div>
+    </div>
+
+    <!-- Autenticación -->
+    <div class="card" style="margin-bottom:1.5rem;" id="auth">
+      <h2 class="doc-section-title">
+        <i data-lucide="shield" style="width:18px;height:18px;stroke:var(--primary);"></i>
+        Autenticación
+      </h2>
+
+      {% set auth_endpoints = [
+        ("POST", "/auth/register", "Registrar nuevo usuario", "client", [
+          ("name", "string", "Nombre completo"),
+          ("email", "string", "Correo electrónico"),
+          ("password", "string", "Contraseña (mín. 8 caracteres)")
+        ]),
+        ("POST", "/auth/login", "Iniciar sesión", "público", [
+          ("email", "string", "Correo electrónico"),
+          ("password", "string", "Contraseña")
+        ]),
+        ("GET", "/auth/logout", "Cerrar sesión", "autenticado", []),
+        ("POST", "/auth/forgot-password", "Solicitar reset de contraseña", "público", [
+          ("email", "string", "Correo electrónico")
+        ]),
+        ("POST", "/auth/reset-password/<token>", "Restablecer contraseña", "público", [
+          ("password", "string", "Nueva contraseña"),
+          ("confirm_password", "string", "Confirmar contraseña")
+        ])
+      ] %}
+
+      {% for method, path, desc, role, params in auth_endpoints %}
+      {{ endpoint(method, path, desc, role, params) }}
+      {% endfor %}
+    </div>
+
+    <!-- Productos -->
+    <div class="card" style="margin-bottom:1.5rem;" id="products">
+      <h2 class="doc-section-title">
+        <i data-lucide="box" style="width:18px;height:18px;stroke:var(--primary);"></i>
+        Productos
+      </h2>
+
+      {% set product_endpoints = [
+        ("GET", "/shop/catalog", "Listar productos del catálogo", "público", [
+          ("q", "string", "Búsqueda por nombre (opcional)"),
+          ("category", "int", "Filtrar por categoría (opcional)"),
+          ("sort", "string", "Ordenar: newest, price_asc, price_desc, name"),
+          ("min_price", "float", "Precio mínimo (opcional)"),
+          ("max_price", "float", "Precio máximo (opcional)")
+        ]),
+        ("GET", "/shop/product/<id>", "Ver detalle de producto", "público", []),
+        ("POST", "/vendor/products/create", "Crear producto", "vendor", [
+          ("name", "string", "Nombre del producto"),
+          ("description", "string", "Descripción"),
+          ("price", "float", "Precio"),
+          ("stock", "int", "Stock disponible"),
+          ("min_stock", "int", "Stock mínimo para alerta"),
+          ("category_id", "int", "ID de categoría"),
+          ("image_url", "string", "URL de imagen (opcional)"),
+          ("image_file", "file", "Archivo de imagen (opcional)")
+        ]),
+        ("POST", "/vendor/products/<id>/edit", "Editar producto", "vendor", [
+          ("name", "string", "Nombre del producto"),
+          ("price", "float", "Nuevo precio"),
+          ("stock", "int", "Stock disponible"),
+          ("min_stock", "int", "Stock mínimo para alerta")
+        ]),
+        ("GET", "/vendor/products/<id>/delete", "Desactivar producto", "vendor", []),
+        ("GET", "/vendor/products/<id>/price-history", "Historial de precios", "vendor", []),
+        ("POST", "/vendor/products/<id>/discounts", "Agregar descuento por cantidad", "vendor", [
+          ("min_qty", "int", "Cantidad mínima"),
+          ("discount", "float", "Porcentaje de descuento")
+        ])
+      ] %}
+
+      {% for method, path, desc, role, params in product_endpoints %}
+      {{ endpoint(method, path, desc, role, params) }}
+      {% endfor %}
+    </div>
+
+    <!-- Categorías -->
+    <div class="card" style="margin-bottom:1.5rem;" id="categories">
+      <h2 class="doc-section-title">
+        <i data-lucide="tag" style="width:18px;height:18px;stroke:var(--primary);"></i>
+        Categorías
+      </h2>
+      {% set cat_endpoints = [
+        ("GET", "/admin/categories", "Listar categorías", "admin", []),
+        ("POST", "/admin/categories/create", "Crear categoría", "admin", [
+          ("name", "string", "Nombre de la categoría")
+        ]),
+        ("POST", "/admin/categories/<id>/edit", "Editar categoría", "admin", [
+          ("name", "string", "Nuevo nombre")
+        ])
+      ] %}
+      {% for method, path, desc, role, params in cat_endpoints %}
+      {{ endpoint(method, path, desc, role, params) }}
+      {% endfor %}
+    </div>
+
+    <!-- Carrito -->
+    <div class="card" style="margin-bottom:1.5rem;" id="cart">
+      <h2 class="doc-section-title">
+        <i data-lucide="shopping-cart" style="width:18px;height:18px;stroke:var(--primary);"></i>
+        Carrito
+      </h2>
+      {% set cart_endpoints = [
+        ("GET", "/shop/cart", "Ver carrito", "client", []),
+        ("POST", "/shop/cart/add/<id>", "Agregar producto al carrito", "client", [
+          ("qty", "int", "Cantidad a agregar")
+        ]),
+        ("GET", "/shop/cart/remove/<id>", "Eliminar producto del carrito", "client", [])
+      ] %}
+      {% for method, path, desc, role, params in cart_endpoints %}
+      {{ endpoint(method, path, desc, role, params) }}
+      {% endfor %}
+    </div>
+
+    <!-- Pedidos -->
+    <div class="card" style="margin-bottom:1.5rem;" id="orders">
+      <h2 class="doc-section-title">
+        <i data-lucide="package" style="width:18px;height:18px;stroke:var(--primary);"></i>
+        Pedidos
+      </h2>
+      {% set order_endpoints = [
+        ("GET", "/shop/orders", "Mis pedidos", "client", []),
+        ("GET", "/shop/orders/<id>", "Detalle de pedido", "client", []),
+        ("POST", "/shop/checkout", "Confirmar pedido", "client", [
+          ("coupon_code", "string", "Código de cupón (opcional)")
+        ]),
+        ("GET", "/admin/orders", "Listar todos los pedidos", "admin", []),
+        ("POST", "/admin/orders/<id>/status", "Cambiar estado de pedido", "admin", [
+          ("status", "string", "pending | confirmed | shipped | delivered | cancelled")
+        ])
+      ] %}
+      {% for method, path, desc, role, params in order_endpoints %}
+      {{ endpoint(method, path, desc, role, params) }}
+      {% endfor %}
+    </div>
+
+    <!-- Cupones -->
+    <div class="card" style="margin-bottom:1.5rem;" id="coupons">
+      <h2 class="doc-section-title">
+        <i data-lucide="ticket" style="width:18px;height:18px;stroke:var(--primary);"></i>
+        Cupones
+      </h2>
+      {% set coupon_endpoints = [
+        ("GET", "/coupons/admin/coupons", "Listar cupones", "admin", []),
+        ("POST", "/coupons/admin/coupons/create", "Crear cupón", "admin", [
+          ("code", "string", "Código único del cupón"),
+          ("discount_type", "string", "percent | fixed"),
+          ("discount_value", "float", "Valor del descuento"),
+          ("min_order", "float", "Compra mínima"),
+          ("max_uses", "int", "Máximo de usos"),
+          ("expires_at", "datetime", "Fecha de expiración (opcional)")
+        ]),
+        ("GET", "/coupons/admin/coupons/<id>/toggle", "Activar/desactivar cupón", "admin", []),
+        ("POST", "/coupons/apply", "Aplicar cupón al carrito", "client", [
+          ("coupon_code", "string", "Código del cupón")
+        ])
+      ] %}
+      {% for method, path, desc, role, params in coupon_endpoints %}
+      {{ endpoint(method, path, desc, role, params) }}
+      {% endfor %}
+    </div>
+
+    <!-- Reseñas -->
+    <div class="card" style="margin-bottom:1.5rem;" id="reviews">
+      <h2 class="doc-section-title">
+        <i data-lucide="star" style="width:18px;height:18px;stroke:var(--primary);"></i>
+        Reseñas y Favoritos
+      </h2>
+      {% set review_endpoints = [
+        ("POST", "/social/review/<id>", "Agregar reseña", "client", [
+          ("rating", "int", "Calificación 1-5"),
+          ("comment", "string", "Comentario (opcional)")
+        ]),
+        ("GET", "/social/favorite/<id>", "Agregar/quitar favorito", "client", []),
+        ("GET", "/social/favorites", "Mis favoritos", "client", [])
+      ] %}
+      {% for method, path, desc, role, params in review_endpoints %}
+      {{ endpoint(method, path, desc, role, params) }}
+      {% endfor %}
+    </div>
+
+    <!-- Pagos -->
+    <div class="card" style="margin-bottom:1.5rem;" id="payments">
+      <h2 class="doc-section-title">
+        <i data-lucide="credit-card" style="width:18px;height:18px;stroke:var(--primary);"></i>
+        Pagos
+      </h2>
+      {% set payment_endpoints = [
+        ("POST", "/payments/stripe/create/<id>", "Crear PaymentIntent de Stripe", "client", []),
+        ("POST", "/payments/stripe/confirm/<id>", "Confirmar pago Stripe", "client", [
+          ("status", "string", "Estado del PaymentIntent")
+        ]),
+        ("GET", "/payments/paypal/create/<id>", "Crear pago PayPal", "client", []),
+        ("GET", "/payments/paypal/execute", "Ejecutar pago PayPal", "client", [
+          ("paymentId", "string", "ID del pago PayPal"),
+          ("PayerID", "string", "ID del pagador PayPal")
+        ])
+      ] %}
+      {% for method, path, desc, role, params in payment_endpoints %}
+      {{ endpoint(method, path, desc, role, params) }}
+      {% endfor %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% macro endpoint(method, path, desc, role, params) %}
+<div class="endpoint-card">
+  <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:0.75rem;">
+    <span class="method-badge method-{{ method|lower }}">{{ method }}</span>
+    <code class="endpoint-path">{{ path }}</code>
+    <span style="color:var(--text-muted); font-size:0.875rem; flex:1;">{{ desc }}</span>
+    <span class="role-badge role-{{ role }}">{{ role }}</span>
+  </div>
+  {% if params %}
+  <div style="background:var(--surface2); border-radius:var(--radius); overflow:hidden;">
+    <table style="width:100%; border-collapse:collapse; font-size:0.8rem;">
+      <thead>
+        <tr style="background:var(--border);">
+          <th style="padding:6px 12px; text-align:left; color:var(--text-muted);
+                     font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">
+            Parámetro
+          </th>
+          <th style="padding:6px 12px; text-align:left; color:var(--text-muted);
+                     font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">
+            Tipo
+          </th>
+          <th style="padding:6px 12px; text-align:left; color:var(--text-muted);
+                     font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">
+            Descripción
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for name, type, description in params %}
+        <tr style="border-top:1px solid var(--border);">
+          <td style="padding:6px 12px;">
+            <code style="color:var(--primary); font-size:0.8rem;">{{ name }}</code>
+          </td>
+          <td style="padding:6px 12px; color:var(--text-muted);">{{ type }}</td>
+          <td style="padding:6px 12px; color:var(--text-muted);">{{ description }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</div>
+{% endmacro %}

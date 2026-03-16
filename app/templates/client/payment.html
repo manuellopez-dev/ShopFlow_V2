@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Pagar Pedido #{{ order.id }} — ShopFlow{% endblock %}
+
+{% block content %}
+<div style="max-width:560px; margin:0 auto;">
+  <div class="page-header">
+    <h1>Pagar Pedido #{{ order.id }}</h1>
+    <a href="{{ url_for('client.order_detail', order_id=order.id) }}"
+       class="btn btn-outline btn-sm">← Volver</a>
+  </div>
+
+  <div class="card" style="margin-bottom:1.25rem;">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <span style="color:var(--text-muted);">Total a pagar</span>
+      <span class="cart-total-amount">${{ "%.2f"|format(order.total) }} MXN</span>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:1.25rem;">
+    <h3 style="font-size:1rem; font-weight:700; margin-bottom:1.25rem; display:flex; align-items:center; gap:8px;">
+      <i data-lucide="credit-card"></i> Pagar con Tarjeta (Stripe)
+    </h3>
+    <div id="card-element">
+      <div class="stripe-fields">
+        <div class="stripe-field">
+          <div class="stripe-field-label">Número de tarjeta</div>
+          <div id="card-number"></div>
+        </div>
+        <div class="stripe-field">
+          <div class="stripe-field-label">Fecha de expiración</div>
+          <div id="card-expiry"></div>
+        </div>
+        <div class="stripe-field">
+          <div class="stripe-field-label">CVC</div>
+          <div id="card-cvc"></div>
+        </div>
+      </div>
+    </div>
+    <div id="card-errors" style="color:var(--danger); font-size:0.85rem; margin:0.75rem 0;"></div>
+    <button id="stripe-btn" class="btn btn-primary btn-full btn-lg" style="margin-top:0.5rem;">
+      <i data-lucide="lock" style="width:15px;height:15px;"></i>
+      Pagar ${{ "%.2f"|format(order.total) }} con Stripe
+    </button>
+  </div>
+
+  <div class="card">
+    <h3 style="font-size:1rem; font-weight:700; margin-bottom:1.25rem; display:flex; align-items:center; gap:8px;">
+      <i data-lucide="wallet"></i> Pagar con PayPal
+    </h3>
+    <p style="color:var(--text-muted); font-size:0.875rem; margin-bottom:1.25rem;">
+      Serás redirigido a PayPal para completar el pago de forma segura.
+    </p>
+    <a href="{{ url_for('payments.paypal_create', order_id=order.id) }}"
+       class="btn btn-outline btn-full btn-lg">
+      <i data-lucide="external-link" style="width:15px;height:15px;"></i>
+      Pagar con PayPal
+    </a>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  window.PAYMENT = {
+    orderId:      {{ order.id }},
+    stripePubKey: "{{ stripe_pub_key }}"
+  };
+</script>
+<script src="https://js.stripe.com/v3/"></script>
+<script src="{{ url_for('static', filename='js/payment.js') }}"></script>
+{% endblock %}

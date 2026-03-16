@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% from "macros/pagination.html" import paginate %}
+{% block title %}Usuarios — ShopFlow{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Usuarios</h1>
+  <a href="{{ url_for('admin.create_user') }}" class="btn btn-primary">
+    <i data-lucide="user-plus" style="width:15px;height:15px;"></i>
+    Nuevo usuario
+  </a>
+</div>
+
+<div class="card" style="padding:0;">
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th>Registro</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users.items %}
+        <tr>
+          <td><strong>{{ u.name }}</strong></td>
+          <td style="color:var(--text-muted);">{{ u.email }}</td>
+          <td><span class="badge-role role-{{ u.role }}">{{ u.role }}</span></td>
+          <td>
+            {% if u.is_active %}
+              <span style="color:var(--success); font-weight:600;">● Activo</span>
+            {% else %}
+              <span style="color:var(--danger); font-weight:600;">● Inactivo</span>
+            {% endif %}
+          </td>
+          <td style="color:var(--text-muted);">{{ u.created_at.strftime('%d/%m/%Y') }}</td>
+          <td>
+            <a href="{{ url_for('admin.toggle_user', user_id=u.id) }}"
+              class="btn btn-outline btn-sm"
+              data-confirm="¿Deseas {{ 'desactivar' if u.is_active else 'activar' }} a {{ u.name }}?">
+              {{ 'Desactivar' if u.is_active else 'Activar' }}
+            </a>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6">
+            <div class="empty-state">
+              <div class="empty-icon"><i data-lucide="users"></i></div>
+              <p>Sin usuarios aún.</p>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {{ paginate(users, 'admin.users') }}
+</div>
+{% endblock %}

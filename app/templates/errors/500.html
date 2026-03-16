@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}500 — Error del servidor{% endblock %}
+
+{% block content %}
+<div style="text-align:center; padding:5rem 2rem;">
+  <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:6rem;
+              font-weight:800; color:var(--danger); line-height:1; margin-bottom:1rem;">
+    500
+  </div>
+  <h2 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:1.5rem;
+             font-weight:700; margin-bottom:1rem;">Error del servidor</h2>
+  <p style="color:var(--text-muted); margin-bottom:2rem;">
+    Algo salió mal. Intenta de nuevo en unos momentos.
+  </p>
+  <a href="{{ url_for('main.index') }}" class="btn btn-primary btn-lg">
+    <i data-lucide="home" style="width:16px;height:16px;"></i>
+    Volver al inicio
+  </a>
+</div>
+{% endblock %}

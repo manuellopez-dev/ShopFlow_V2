@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% from "macros/pagination.html" import paginate %}
+{% block title %}Mis Pedidos — ShopFlow{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Mis Pedidos</h1>
+</div>
+
+<div class="card" style="padding:0;">
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Total</th>
+          <th>Estado</th>
+          <th>Pago</th>
+          <th>Fecha</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in orders.items %}
+        <tr>
+          <td><strong>#{{ order.id }}</strong></td>
+          <td><strong>${{ "%.2f"|format(order.total) }}</strong></td>
+          <td>
+            <span class="status-badge status-{{ order.status }}">{{ order.status }}</span>
+          </td>
+          <td>
+            {% if order.payment_status == 'paid' %}
+              <span style="color:var(--success); font-weight:600;">Pagado</span>
+            {% else %}
+              <span style="color:var(--warning); font-weight:600;">Pendiente</span>
+            {% endif %}
+          </td>
+          <td style="color:var(--text-muted);">
+            {{ order.created_at.strftime('%d/%m/%Y %H:%M') }}
+          </td>
+          <td>
+            <a href="{{ url_for('client.order_detail', order_id=order.id) }}"
+               class="btn btn-outline btn-sm">
+              <i data-lucide="eye" style="width:13px;height:13px;"></i>
+              Ver detalle
+            </a>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6">
+            <div class="empty-state">
+              <div class="empty-icon"><i data-lucide="package"></i></div>
+              <p>No tienes pedidos aún.</p>
+              <a href="{{ url_for('client.catalog') }}" class="btn btn-primary">
+                Ir al catálogo
+              </a>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {{ paginate(orders, 'client.my_orders') }}
+</div>
+{% endblock %}

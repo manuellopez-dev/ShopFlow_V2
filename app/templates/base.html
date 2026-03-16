@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>{% block title %}ShopFlow{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<nav>
+  <a href="{{ url_for('main.index') }}" class="nav-brand">
+    <div class="nav-brand-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <path d="M16 10a4 4 0 0 1-8 0"/>
+      </svg>
+    </div>
+    Shop<span>Flow</span>
+  </a>
+
+  <div class="nav-links">
+    {% if current_user %}
+      <div class="nav-user">
+        <div class="nav-avatar">{{ current_user.name[0].upper() }}</div>
+        {{ current_user.name.split()[0] }}
+        <span class="badge-role role-{{ current_user.role }}">{{ current_user.role }}</span>
+      </div>
+
+      <div class="nav-divider"></div>
+
+      {% if current_user.is_admin() %}
+        <a href="{{ url_for('admin.dashboard') }}">
+          <i data-lucide="layout-dashboard"></i> Dashboard
+        </a>
+        <a href="{{ url_for('admin.users') }}">
+          <i data-lucide="users"></i> Usuarios
+        </a>
+        <a href="{{ url_for('admin.categories') }}">
+          <i data-lucide="tag"></i> Categorías
+        </a>
+        <a href="{{ url_for('admin.orders') }}">
+          <i data-lucide="package"></i> Pedidos
+        </a>
+        <a href="{{ url_for('coupons.list_coupons') }}">
+          <i data-lucide="ticket"></i> Cupones
+        </a>
+        <a href="{{ url_for('main.api_docs') }}">
+          <i data-lucide="book-open"></i> API Docs
+        </a>
+        <a href="{{ url_for('main.db_docs') }}">
+          <i data-lucide="database"></i> BD Diagrama
+        </a>
+        <a href="{{ url_for('main.manual') }}">
+          <i data-lucide="book"></i> Manual
+        </a>
+      {% elif current_user.is_vendor() %}
+        <a href="{{ url_for('vendor.dashboard') }}">
+          <i data-lucide="layout-dashboard"></i> Dashboard
+        </a>
+        <a href="{{ url_for('vendor.products') }}">
+          <i data-lucide="box"></i> Mis Productos
+        </a>
+      {% else %}
+        <a href="{{ url_for('client.catalog') }}">
+          <i data-lucide="grid"></i> Catálogo
+        </a>
+        <a href="{{ url_for('client.cart') }}" style="position:relative;">
+  <i data-lucide="shopping-cart"></i> Carrito
+  {% set cart = session.get('cart', {}) %}
+  {% set cart_count = cart.values()|sum %}
+  {% if cart_count > 0 %}
+  <span id="cart-badge" style="
+    position:absolute; top:-8px; right:-8px;
+    background:var(--primary); color:white;
+    border-radius:50%; width:18px; height:18px;
+    font-size:0.65rem; font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+    border:2px solid var(--bg);">
+    {{ cart_count }}
+  </span>
+  {% else %}
+  <span id="cart-badge" style="display:none;
+    position:absolute; top:-8px; right:-8px;
+    background:var(--primary); color:white;
+    border-radius:50%; width:18px; height:18px;
+    font-size:0.65rem; font-weight:700;
+    display:none; align-items:center; justify-content:center;
+    border:2px solid var(--bg);">0
+  </span>
+  {% endif %}
+</a>
+        <a href="{{ url_for('client.my_orders') }}">
+          <i data-lucide="clipboard-list"></i> Pedidos
+        </a>
+        <a href="{{ url_for('reviews.my_favorites') }}">
+          <i data-lucide="heart"></i> Favoritos
+        </a>
+        <a href="{{ url_for('client.profile') }}">
+          <i data-lucide="user"></i> Perfil
+        </a>
+      {% endif %}
+
+      <div class="nav-divider"></div>
+      <a href="{{ url_for('auth.logout') }}" class="danger">
+        <i data-lucide="log-out"></i> Salir
+      </a>
+    {% else %}
+      <a href="{{ url_for('auth.login') }}">
+        <i data-lucide="log-in"></i> Iniciar sesión
+      </a>
+      <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm">
+        <i data-lucide="user-plus"></i> Registrarse
+      </a>
+    {% endif %}
+  </div>
+
+  <button id="theme-toggle" class="btn btn-ghost btn-sm" title="Cambiar tema"
+        style="padding:0.4rem 0.6rem;">
+    <i data-lucide="moon" id="theme-icon" style="width:18px;height:18px;"></i>
+  </button>
+</nav>
+
+<main>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="alerts">
+        {% for cat, msg in messages %}
+          <div class="alert alert-{{ cat }}">{{ msg }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</main>
+
+<footer>
+  ShopFlow &copy; 2026 — Luis Manuel López Cano
+</footer>
+
+<script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+<script>lucide.createIcons();</script>
+<script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
+<script src="{{ url_for('static', filename='js/toast.js') }}"></script>
+<script src="{{ url_for('static', filename='js/form_validation.js') }}"></script>
+<script src="{{ url_for('static', filename='js/confirm.js') }}"></script>
+
+<!-- Toast container -->
+<div id="toast-container" style="
+  position:fixed; bottom:1.5rem; right:1.5rem;
+  display:flex; flex-direction:column; gap:0.75rem;
+  z-index:9999; pointer-events:none;">
+</div>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

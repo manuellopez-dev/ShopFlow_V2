@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Mis Favoritos — ShopFlow{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>❤️ Mis Favoritos</h1>
+  <a href="{{ url_for('client.catalog') }}" class="btn btn-outline btn-sm">← Catálogo</a>
+</div>
+
+{% if products %}
+<div class="product-grid">
+  {% for p in products %}
+  <div class="product-card">
+    <div class="product-img">🛍️</div>
+    <div class="product-body">
+      <div class="product-cat">{{ p.category.name if p.category else 'Sin categoría' }}</div>
+      <div class="product-name">{{ p.name }}</div>
+      <div style="display:flex; align-items:center; gap:6px; margin-top:4px;">
+        <span style="color:#f59e0b; font-size:0.9rem;">
+          {% for i in range(p.avg_rating|int) %}★{% endfor %}
+          {% for i in range(5 - p.avg_rating|int) %}☆{% endfor %}
+        </span>
+        <span style="color:var(--text-muted); font-size:0.8rem;">({{ p.review_count }})</span>
+      </div>
+      <div class="product-price">${{ "%.2f"|format(p.price) }}</div>
+    </div>
+    <div class="product-actions" style="gap:0.5rem;">
+      <a href="{{ url_for('reviews.toggle_favorite', product_id=p.id) }}"
+         class="btn btn-danger btn-sm">❤️ Quitar</a>
+      <form method="POST" action="{{ url_for('client.add_to_cart', product_id=p.id) }}"
+            style="flex:1;">
+        <input type="hidden" name="qty" value="1">
+        <button type="submit" class="btn btn-primary btn-full">Agregar</button>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-icon">❤️</div>
+  <p>No tienes productos favoritos aún.</p>
+  <a href="{{ url_for('client.catalog') }}" class="btn btn-primary">Explorar catálogo</a>
+</div>
+{% endif %}
+{% endblock %}

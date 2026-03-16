@@ -1,0 +1,403 @@
+{% extends "base.html" %}
+{% block title %}Manual de Usuario — ShopFlow{% endblock %}
+
+{% block content %}
+<div class="docs-layout">
+
+  <aside class="docs-sidebar">
+    <div class="card">
+      <div style="font-size:0.72rem; font-weight:700; text-transform:uppercase;
+                  letter-spacing:0.6px; color:var(--text-muted); margin-bottom:0.75rem;">
+        Contenido
+      </div>
+      <nav>
+        <a href="#intro"     class="doc-nav-link">Introducción</a>
+        <a href="#roles"     class="doc-nav-link">Roles de usuario</a>
+        <a href="#registro"  class="doc-nav-link">Registro y login</a>
+        <a href="#cliente"   class="doc-nav-link">Guía del cliente</a>
+        <a href="#vendedor"  class="doc-nav-link">Guía del vendedor</a>
+        <a href="#admin"     class="doc-nav-link">Guía del admin</a>
+        <a href="#seguridad" class="doc-nav-link">Seguridad</a>
+        <a href="#pagos"     class="doc-nav-link">Pagos</a>
+        <a href="#faq"       class="doc-nav-link">Preguntas frecuentes</a>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- ─── Contenido ───────────────────────────────── -->
+  <div style="min-width:0; display:flex; flex-direction:column; gap:1.5rem;">
+
+    <!-- Introducción -->
+    <div class="card" id="intro">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:1.25rem;">
+        <div style="width:48px; height:48px; background:var(--primary);
+                    border-radius:var(--radius-lg); display:flex; align-items:center;
+                    justify-content:center; box-shadow:var(--shadow-blue);">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+               stroke="white" stroke-width="2.5" style="width:24px;height:24px;">
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+        </div>
+        <div>
+          <h1 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:1.75rem;
+                     font-weight:800; letter-spacing:-0.5px;">Manual de Usuario</h1>
+          <p style="color:var(--text-muted); font-size:0.875rem;">ShopFlow v2.0 — 2026</p>
+        </div>
+      </div>
+      <p style="color:var(--text-muted); line-height:1.8; margin-bottom:1rem;">
+        <strong>ShopFlow</strong> es una plataforma de comercio electrónico segura que permite
+        a vendedores publicar productos y a clientes realizar compras en línea con pagos
+        integrados mediante Stripe y PayPal.
+      </p>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:1rem;">
+        {% for icon, title, desc in [
+          ('shield-check', 'Seguro', 'JWT + 2FA para máxima protección'),
+          ('users', 'Multi-rol', '3 niveles de acceso diferenciados'),
+          ('credit-card', 'Pagos reales', 'Stripe y PayPal integrados'),
+        ] %}
+        <div style="background:var(--primary-light); border-radius:var(--radius);
+                    padding:1rem; text-align:center;">
+          <i data-lucide="{{ icon }}" style="width:24px;height:24px;stroke:var(--primary);margin-bottom:0.5rem;"></i>
+          <div style="font-weight:700; font-size:0.875rem; margin-bottom:4px;">{{ title }}</div>
+          <div style="color:var(--text-muted); font-size:0.75rem;">{{ desc }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Roles -->
+    <div class="card" id="roles">
+      <h2 class="doc-section-title">
+        <i data-lucide="users" style="width:18px;height:18px;stroke:var(--primary);"></i>
+        Roles de Usuario
+      </h2>
+      <div style="display:flex; flex-direction:column; gap:1rem;">
+        {% for role, color, icon, desc, perms in [
+          ('Administrador', 'primary', 'shield', 'Control total del sistema.',
+           ['Gestionar usuarios', 'Gestionar categorías', 'Ver todos los pedidos',
+            'Cambiar estados de pedidos', 'Crear y gestionar cupones',
+            'Ver dashboard con estadísticas', 'Configurar 2FA']),
+          ('Vendedor', 'success', 'store', 'Gestiona su catálogo de productos.',
+           ['Crear y editar productos', 'Subir imágenes de productos',
+            'Agregar descuentos por cantidad', 'Ver historial de precios',
+            'Ver dashboard de ventas', 'Recibir alertas de stock bajo']),
+          ('Cliente', 'info', 'user', 'Realiza compras en la plataforma.',
+           ['Navegar el catálogo con filtros', 'Agregar productos al carrito',
+            'Aplicar cupones de descuento', 'Pagar con Stripe o PayPal',
+            'Ver historial de pedidos', 'Escribir reseñas', 'Guardar favoritos']),
+        ] %}
+        <div style="border:1px solid var(--border); border-radius:var(--radius-lg);
+                    overflow:hidden;">
+          <div style="padding:1rem 1.25rem; background:var(--{{ color }}-bg);
+                      display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--border);">
+            <i data-lucide="{{ icon }}" style="width:18px;height:18px;stroke:var(--{{ color }});"></i>
+            <strong style="color:var(--{{ color }});">{{ role }}</strong>
+            <span style="color:var(--text-muted); font-size:0.875rem;">— {{ desc }}</span>
+          </div>
+          <div style="padding:1rem 1.25rem; display:flex; flex-wrap:wrap; gap:6px;">
+            {% for perm in perms %}
+            <span style="background:var(--surface2); border:1px solid var(--border);
+                         padding:3px 10px; border-radius:20px; font-size:0.78rem;
+                         color:var(--text-muted);">
+              ✓ {{ perm }}
+            </span>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Registro y login -->
+    <div class="card" id="registro">
+      <h2 class="doc-section-title">
+        <i data-lucide="log-in" style="width:18px;height:18px;stroke:var(--primary);"></i>
+        Registro e Inicio de Sesión
+      </h2>
+      {{ steps([
+        ('Registro', 'user-plus', [
+          'Ve a la página principal y haz click en "Registrarse".',
+          'Completa el formulario con tu nombre, correo y contraseña (mínimo 8 caracteres).',
+          'Haz click en "Crear cuenta" — serás redirigido al login.',
+        ]),
+        ('Inicio de sesión', 'log-in', [
+          'Ingresa tu correo electrónico y contraseña.',
+          'Si tienes 2FA activado, ingresa el código de tu app autenticadora.',
+          'Serás redirigido automáticamente según tu rol.',
+        ]),
+        ('Recuperar contraseña', 'key', [
+          'Haz click en "¿Olvidaste tu contraseña?" en el login.',
+          'Ingresa tu correo electrónico registrado.',
+          'Revisa tu bandeja de entrada y sigue el enlace (válido 15 minutos).',
+          'Establece tu nueva contraseña.',
+        ]),
+      ]) }}
+    </div>
+
+    <!-- Guía Cliente -->
+    <div class="card" id="cliente">
+      <h2 class="doc-section-title">
+        <i data-lucide="shopping-bag" style="width:18px;height:18px;stroke:var(--primary);"></i>
+        Guía del Cliente
+      </h2>
+      {{ steps([
+        ('Explorar el catálogo', 'grid', [
+          'Accede al catálogo desde el navbar.',
+          'Usa la barra de búsqueda para encontrar productos por nombre.',
+          'Filtra por categoría, precio mínimo y máximo.',
+          'Ordena por precio, nombre o más recientes.',
+        ]),
+        ('Agregar al carrito', 'shopping-cart', [
+          'En el catálogo selecciona la cantidad y haz click en "Agregar".',
+          'Verás una notificación y el contador del carrito se actualizará.',
+          'Para ver el detalle del producto haz click en su nombre.',
+        ]),
+        ('Proceso de compra', 'credit-card', [
+          'Ve al carrito y revisa tus productos.',
+          'En el checkout puedes aplicar un cupón de descuento.',
+          'Confirma el pedido — serás redirigido a la página de pago.',
+          'Paga con tarjeta (Stripe) o con PayPal.',
+        ]),
+        ('Seguimiento de pedidos', 'package', [
+          'Ve a "Pedidos" en el navbar para ver tus compras.',
+          'Cada pedido muestra su estado: Pendiente → Confirmado → Enviado → Entregado.',
+          'Recibirás un correo cuando cambie el estado de tu pedido.',
+        ]),
+        ('Reseñas y favoritos', 'star', [
+          'En el detalle del producto puedes escribir una reseña con calificación.',
+          'Haz click en el corazón para agregar un producto a favoritos.',
+          'Accede a tus favoritos desde el navbar.',
+        ]),
+      ]) }}
+    </div>
+
+    <!-- Guía Vendedor -->
+    <div class="card" id="vendedor">
+      <h2 class="doc-section-title">
+        <i data-lucide="store" style="width:18px;height:18px;stroke:var(--primary);"></i>
+        Guía del Vendedor
+      </h2>
+      {{ steps([
+        ('Gestionar productos', 'box', [
+          'Ve a "Mis Productos" en el navbar.',
+          'Haz click en "+ Nuevo producto" para crear uno.',
+          'Completa nombre, descripción, precio, stock y categoría.',
+          'Sube una imagen desde tu PC o ingresa una URL.',
+          'Define el stock mínimo para recibir alertas por email.',
+        ]),
+        ('Descuentos por cantidad', 'percent', [
+          'En la lista de productos haz click en el ícono % de un producto.',
+          'Define la cantidad mínima y el porcentaje de descuento.',
+          'Puedes agregar múltiples descuentos para distintas cantidades.',
+          'Ejemplo: 5+ unidades → 10% OFF, 10+ unidades → 20% OFF.',
+        ]),
+        ('Historial de precios', 'trending-up', [
+          'En la lista de productos haz click en el ícono de tendencia.',
+          'Verás todos los cambios de precio con fecha y porcentaje de variación.',
+        ]),
+        ('Dashboard de ventas', 'layout-dashboard', [
+          'Ve al Dashboard para ver estadísticas de tus ventas.',
+          'Revisa la gráfica de ventas de los últimos 7 días.',
+          'Consulta tus productos más vendidos.',
+          'El indicador de stock bajo te alertará si algún producto está por agotarse.',
+        ]),
+      ]) }}
+    </div>
+
+    <!-- Guía Admin -->
+    <div class="card" id="admin">
+      <h2 class="doc-section-title">
+        <i data-lucide="shield" style="width:18px;height:18px;stroke:var(--primary);"></i>
+        Guía del Administrador
+      </h2>
+      {{ steps([
+        ('Gestión de usuarios', 'users', [
+          'Ve a "Usuarios" en el navbar.',
+          'Puedes activar o desactivar usuarios.',
+          'Los usuarios inactivos no pueden iniciar sesión.',
+        ]),
+        ('Gestión de categorías', 'tag', [
+          'Ve a "Categorías" en el navbar.',
+          'Crea categorías para organizar los productos.',
+          'Las categorías inactivas no aparecen en el catálogo.',
+        ]),
+        ('Gestión de pedidos', 'package', [
+          'Ve a "Pedidos" para ver todos los pedidos de la plataforma.',
+          'Cambia el estado del pedido con el selector de la tabla.',
+          'Al cambiar el estado se envía un email automático al cliente.',
+        ]),
+        ('Cupones de descuento', 'ticket', [
+          'Ve a "Cupones" para gestionar los códigos de descuento.',
+          'Crea cupones con descuento en porcentaje o monto fijo.',
+          'Define fecha de expiración y máximo de usos.',
+          'Activa o desactiva cupones según necesites.',
+        ]),
+        ('Dashboard', 'layout-dashboard', [
+          'El Dashboard muestra estadísticas globales de la plataforma.',
+          'Revisa ingresos, pedidos por estado y productos más vendidos.',
+          'Los pedidos recientes aparecen en la tabla inferior.',
+        ]),
+      ]) }}
+    </div>
+
+    <!-- Seguridad -->
+    <div class="card" id="seguridad">
+      <h2 class="doc-section-title">
+        <i data-lucide="shield-check" style="width:18px;height:18px;stroke:var(--primary);"></i>
+        Seguridad
+      </h2>
+      <div style="display:flex; flex-direction:column; gap:1rem;">
+        {% for icon, title, desc in [
+          ('key', 'JWT (JSON Web Tokens)',
+           'La sesión se maneja con tokens JWT almacenados en cookies HTTP-only, lo que previene ataques XSS.'),
+          ('smartphone', 'Autenticación de doble factor (2FA)',
+           'Los administradores pueden activar 2FA usando apps como Google Authenticator o Authy. Cada login requerirá un código temporal.'),
+          ('shield', 'CSRF Protection',
+           'Todos los formularios incluyen un token CSRF para prevenir ataques de falsificación de solicitudes entre sitios.'),
+          ('alert-triangle', 'Rate Limiting',
+           'El login tiene límite de 5 intentos por minuto y 20 por hora para prevenir ataques de fuerza bruta.'),
+          ('lock', 'Sanitización XSS',
+           'Todos los inputs del usuario son sanitizados antes de guardarse en la base de datos para prevenir inyección de código.'),
+        ] %}
+        <div style="display:flex; gap:1rem; padding:1rem; background:var(--surface2);
+                    border-radius:var(--radius); border:1px solid var(--border);">
+          <div style="width:36px; height:36px; background:var(--primary-light); border-radius:var(--radius);
+                      display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <i data-lucide="{{ icon }}" style="width:18px;height:18px;stroke:var(--primary);"></i>
+          </div>
+          <div>
+            <div style="font-weight:700; font-size:0.9rem; margin-bottom:4px;">{{ title }}</div>
+            <div style="color:var(--text-muted); font-size:0.875rem; line-height:1.6;">{{ desc }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Pagos -->
+    <div class="card" id="pagos">
+      <h2 class="doc-section-title">
+        <i data-lucide="credit-card" style="width:18px;height:18px;stroke:var(--primary);"></i>
+        Pagos
+      </h2>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+        <div style="border:1px solid #bfdbfe; border-radius:var(--radius-lg);
+                    padding:1.25rem; background:#eff6ff;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:0.75rem;">
+            <i data-lucide="credit-card" style="width:20px;height:20px;stroke:#2563eb;"></i>
+            <strong style="color:#2563eb;">Stripe</strong>
+          </div>
+          <p style="color:var(--text-muted); font-size:0.875rem; line-height:1.6; margin-bottom:0.75rem;">
+            Pago con tarjeta de crédito o débito. Los datos se procesan de forma segura.
+          </p>
+          <div style="font-size:0.78rem; color:var(--text-muted);">
+            <strong>Tarjeta de prueba:</strong><br>
+            4242 4242 4242 4242<br>
+            Fecha: 12/26 — CVC: 123
+          </div>
+        </div>
+        <div style="border:1px solid #a7f3d0; border-radius:var(--radius-lg);
+                    padding:1.25rem; background:#ecfdf5;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:0.75rem;">
+            <i data-lucide="wallet" style="width:20px;height:20px;stroke:#059669;"></i>
+            <strong style="color:#059669;">PayPal</strong>
+          </div>
+          <p style="color:var(--text-muted); font-size:0.875rem; line-height:1.6; margin-bottom:0.75rem;">
+            Serás redirigido al sitio de PayPal para completar el pago de forma segura.
+          </p>
+          <div style="font-size:0.78rem; color:var(--text-muted);">
+            Usa tu cuenta de PayPal sandbox para pruebas en modo desarrollo.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="card" id="faq">
+      <h2 class="doc-section-title">
+        <i data-lucide="help-circle" style="width:18px;height:18px;stroke:var(--primary);"></i>
+        Preguntas Frecuentes
+      </h2>
+      <div style="display:flex; flex-direction:column; gap:0.75rem;">
+        {% for q, a in [
+          ('¿Cómo activo el modo oscuro?',
+           'Haz click en el ícono de luna 🌙 en la esquina superior derecha del navbar.'),
+          ('¿Puedo aplicar más de un cupón a la vez?',
+           'No, solo se puede aplicar un cupón por pedido.'),
+          ('¿Qué pasa si un producto se agota durante mi compra?',
+           'Si el stock es insuficiente al confirmar el pedido, ese producto no se incluirá.'),
+          ('¿Cómo sé si mi pago fue exitoso?',
+           'Recibirás un email de confirmación y tu pedido cambiará al estado "Confirmado".'),
+          ('¿Puedo cancelar un pedido?',
+           'Solo el administrador puede cambiar el estado de un pedido a "Cancelado".'),
+          ('¿Cómo configuro la autenticación 2FA?',
+           'Solo disponible para administradores. Ve a tu perfil y haz click en "Configurar 2FA". Necesitas una app como Google Authenticator.'),
+          ('¿Mis datos de tarjeta son seguros?',
+           'Sí. Los datos de tarjeta son procesados directamente por Stripe y nunca pasan por nuestros servidores.'),
+        ] %}
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span>{{ q }}</span>
+            <i data-lucide="chevron-down" style="width:16px;height:16px;transition:transform 0.2s;"></i>
+          </button>
+          <div class="faq-answer">
+            <p>{{ a }}</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% macro steps(items) %}
+<div style="display:flex; flex-direction:column; gap:1rem;">
+  {% for title, icon, steps_list in items %}
+  <div style="border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden;">
+    <div style="padding:0.75rem 1.25rem; background:var(--surface2); border-bottom:1px solid var(--border);
+                display:flex; align-items:center; gap:8px;">
+      <i data-lucide="{{ icon }}" style="width:15px;height:15px;stroke:var(--primary);"></i>
+      <strong style="font-size:0.875rem;">{{ title }}</strong>
+    </div>
+    <ol style="margin:0; padding:1rem 1.25rem 1rem 2.5rem;">
+      {% for step in steps_list %}
+      <li style="color:var(--text-muted); font-size:0.875rem; line-height:1.7; margin-bottom:4px;">
+        {{ step }}
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+  {% endfor %}
+</div>
+{% endmacro %}
+
+{% block extra_js %}
+<script>
+function toggleFaq(btn) {
+  const item   = btn.parentElement;
+  const answer = btn.nextElementSibling;
+  const icon   = btn.querySelector("i");
+  const isOpen = item.classList.contains("open");
+
+  // Cerrar todos
+  document.querySelectorAll(".faq-item.open").forEach(el => {
+    el.classList.remove("open");
+    el.querySelector(".faq-answer").style.maxHeight = "0";
+    el.querySelector(".faq-answer").style.padding   = "0 1.25rem";
+    el.querySelector("i").style.transform = "rotate(0deg)";
+  });
+
+  // Abrir el clickeado si estaba cerrado
+  if (!isOpen) {
+    item.classList.add("open");
+    answer.style.maxHeight = answer.scrollHeight + 40 + "px";
+    answer.style.padding   = "0.75rem 1.25rem";
+    icon.style.transform   = "rotate(180deg)";
+  }
+}
+</script>
+{% endblock %}

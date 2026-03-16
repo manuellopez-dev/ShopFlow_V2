@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}ShopFlow — E-Commerce Seguro{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <div id="particles-js"></div>
+  <div class="hero-content">
+    <div class="hero-tag">
+      <i data-lucide="zap" style="width:12px;height:12px;"></i>
+      Plataforma E-Commerce
+    </div>
+    <h1>La tienda online que<br><span>tu negocio necesita</span></h1>
+    <p>Plataforma segura con autenticación JWT, control de acceso por roles y autenticación de doble factor.</p>
+    <div class="hero-btns">
+      <a href="{{ url_for('auth.register') }}" class="btn-hero-primary">
+        <i data-lucide="rocket" style="width:16px;height:16px;stroke:var(--primary);"></i>
+        Comenzar gratis
+      </a>
+      <a href="{{ url_for('auth.login') }}" class="btn-hero-outline">
+        <i data-lucide="log-in" style="width:16px;height:16px;"></i>
+        Iniciar sesión
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="features-grid">
+  <div class="feature-card reveal">
+    <div class="feature-icon"><i data-lucide="shield-check"></i></div>
+    <h3>JWT + 2FA</h3>
+    <p>Tokens seguros de corta duración y autenticación de doble factor para administradores.</p>
+  </div>
+  <div class="feature-card reveal">
+    <div class="feature-icon"><i data-lucide="users"></i></div>
+    <h3>Control de Roles</h3>
+    <p>Tres niveles de acceso diferenciados: Administrador, Vendedor y Cliente.</p>
+  </div>
+  <div class="feature-card reveal">
+    <div class="feature-icon"><i data-lucide="shopping-bag"></i></div>
+    <h3>E-Commerce Completo</h3>
+    <p>Catálogo de productos, carrito de compras y gestión de pedidos integrada.</p>
+  </div>
+  <div class="feature-card reveal">
+    <div class="feature-icon"><i data-lucide="cloud"></i></div>
+    <h3>Cloud Ready</h3>
+    <p>Listo para desplegar en PythonAnywhere o Render con base de datos en la nube.</p>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+<script src="{{ url_for('static', filename='js/particles-config.js') }}"></script>
+{% endblock %}

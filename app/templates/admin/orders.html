@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% from "macros/pagination.html" import paginate %}
+{% block title %}Pedidos — ShopFlow{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Pedidos</h1>
+</div>
+
+<div class="card" style="padding:0;">
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Cliente</th>
+          <th>Total</th>
+          <th>Pago</th>
+          <th>Estado</th>
+          <th>Fecha</th>
+          <th>Cambiar estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in orders.items %}
+        <tr>
+          <td><strong>#{{ order.id }}</strong></td>
+          <td>{{ order.client.name }}</td>
+          <td><strong>${{ "%.2f"|format(order.total) }}</strong></td>
+          <td>
+            {% if order.payment_status == 'paid' %}
+              <span style="color:var(--success); font-weight:600;">Pagado</span>
+            {% else %}
+              <span style="color:var(--warning); font-weight:600;">Pendiente</span>
+            {% endif %}
+          </td>
+          <td>
+            <span class="status-badge status-{{ order.status }}">{{ order.status }}</span>
+          </td>
+          <td style="color:var(--text-muted);">
+            {{ order.created_at.strftime('%d/%m/%Y %H:%M') }}
+          </td>
+          <td>
+            <form method="POST"
+                  action="{{ url_for('admin.update_order_status', order_id=order.id) }}"
+                  style="display:flex; gap:0.5rem; align-items:center;">
+              <select name="status" style="padding:0.35rem 0.6rem; font-size:0.8rem;">
+                <option value="pending"   {% if order.status == 'pending'   %}selected{% endif %}>Pendiente</option>
+                <option value="confirmed" {% if order.status == 'confirmed' %}selected{% endif %}>Confirmado</option>
+                <option value="shipped"   {% if order.status == 'shipped'   %}selected{% endif %}>Enviado</option>
+                <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>Entregado</option>
+                <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>Cancelado</option>
+              </select>
+              <button type="submit" class="btn btn-primary btn-sm">
+                <i data-lucide="check" style="width:13px;height:13px;"></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="7">
+            <div class="empty-state">
+              <div class="empty-icon"><i data-lucide="package"></i></div>
+              <p>Sin pedidos aún.</p>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {{ paginate(orders, 'admin.orders') }}
+</div>
+{% endblock %}

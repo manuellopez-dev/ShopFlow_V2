@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Cupones — ShopFlow{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Cupones</h1>
+  <a href="{{ url_for('coupons.create_coupon') }}" class="btn btn-primary">+ Nuevo cupón</a>
+</div>
+
+<div class="card" style="padding:0;">
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Descuento</th>
+          <th>Mínimo</th>
+          <th>Usos</th>
+          <th>Estado</th>
+          <th>Expira</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in coupons %}
+        <tr>
+          <td><strong style="letter-spacing:1px;">{{ c.code }}</strong></td>
+          <td>
+            {% if c.discount_type == 'percent' %}
+              <span class="status-badge status-confirmed">{{ c.discount_value }}% OFF</span>
+            {% else %}
+              <span class="status-badge status-shipped">${{ c.discount_value }} OFF</span>
+            {% endif %}
+          </td>
+          <td>${{ "%.2f"|format(c.min_order) }}</td>
+          <td style="color:var(--text-muted);">{{ c.used_count }}/{{ c.max_uses }}</td>
+          <td>
+            {% if c.is_active %}
+              <span style="color:var(--success); font-weight:600;">● Activo</span>
+            {% else %}
+              <span style="color:var(--danger); font-weight:600;">● Inactivo</span>
+            {% endif %}
+          </td>
+          <td style="color:var(--text-muted); font-size:0.85rem;">
+            {{ c.expires_at.strftime('%d/%m/%Y') if c.expires_at else '—' }}
+          </td>
+          <td>
+            <a href="{{ url_for('coupons.toggle_coupon', coupon_id=c.id) }}"
+               class="btn btn-outline btn-sm"
+               data-confirm="¿Deseas {{ 'desactivar' if c.is_active else 'activar' }} el cupón '{{ c.code }}'?">
+               {{ 'Desactivar' if c.is_active else 'Activar' }}
+            </a>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="7">
+            <div class="empty-state">
+              <div class="empty-icon">🎟️</div>
+              <p>Sin cupones aún.</p>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

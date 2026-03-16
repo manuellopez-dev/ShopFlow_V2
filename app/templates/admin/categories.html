@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Categorías — ShopFlow{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Categorías</h1>
+  <a href="{{ url_for('admin.create_category') }}" class="btn btn-primary">+ Nueva categoría</a>
+</div>
+
+<div class="card" style="padding:0;">
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for cat in categories %}
+        <tr>
+          <td><strong>{{ cat.name }}</strong></td>
+          <td style="color:var(--text-muted);">{{ cat.description or '—' }}</td>
+          <td>
+            {% if cat.is_active %}
+              <span style="color:var(--success); font-weight:600;">● Activa</span>
+            {% else %}
+              <span style="color:var(--danger); font-weight:600;">● Inactiva</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="3">
+            <div class="empty-state">
+              <div class="empty-icon">🗂️</div>
+              <p>Sin categorías aún.</p>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

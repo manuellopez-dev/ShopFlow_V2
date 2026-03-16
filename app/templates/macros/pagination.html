@@ -1,0 +1,38 @@
+{% macro paginate(pagination, endpoint) %}
+{% if pagination.pages > 1 %}
+<div class="pagination">
+  {% if pagination.has_prev %}
+    <a href="{{ url_for(endpoint, page=pagination.prev_num) }}" class="page-btn">
+      <i data-lucide="chevron-left" style="width:15px;height:15px;"></i>
+    </a>
+  {% else %}
+    <span class="page-btn disabled">
+      <i data-lucide="chevron-left" style="width:15px;height:15px;"></i>
+    </span>
+  {% endif %}
+
+  {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+    {% if p %}
+      <a href="{{ url_for(endpoint, page=p) }}"
+         class="page-btn {{ 'active' if p == pagination.page }}">{{ p }}</a>
+    {% else %}
+      <span class="page-btn disabled">…</span>
+    {% endif %}
+  {% endfor %}
+
+  {% if pagination.has_next %}
+    <a href="{{ url_for(endpoint, page=pagination.next_num) }}" class="page-btn">
+      <i data-lucide="chevron-right" style="width:15px;height:15px;"></i>
+    </a>
+  {% else %}
+    <span class="page-btn disabled">
+      <i data-lucide="chevron-right" style="width:15px;height:15px;"></i>
+    </span>
+  {% endif %}
+
+  <span style="color:var(--text-muted); font-size:0.8rem; align-self:center; margin-left:0.5rem;">
+    {{ pagination.total }} resultado{{ 's' if pagination.total != 1 }}
+  </span>
+</div>
+{% endif %}
+{% endmacro %}

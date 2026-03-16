@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Historial de Precios — {{ product.name }}{% endblock %}
+
+{% block content %}
+<div style="max-width:700px; margin:0 auto;">
+  <div class="page-header">
+    <div>
+      <h1>Historial de precios</h1>
+      <p style="color:var(--text-muted); font-size:0.875rem;">{{ product.name }}</p>
+    </div>
+    <a href="{{ url_for('vendor.products') }}" class="btn btn-outline btn-sm">← Volver</a>
+  </div>
+
+  <!-- Precio actual -->
+  <div class="card" style="margin-bottom:1.5rem; display:flex; align-items:center;
+                            justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+    <div>
+      <div style="font-size:0.72rem; font-weight:700; text-transform:uppercase;
+                  letter-spacing:0.5px; color:var(--text-muted); margin-bottom:4px;">
+        Precio actual
+      </div>
+      <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:2rem;
+                  font-weight:800; color:var(--accent);">
+        ${{ "%.2f"|format(product.price) }}
+      </div>
+    </div>
+    <a href="{{ url_for('vendor.edit_product', product_id=product.id) }}"
+       class="btn btn-primary">
+      <i data-lucide="edit" style="width:14px;height:14px;"></i>
+      Cambiar precio
+    </a>
+  </div>
+
+  <!-- Historial -->
+  <div class="card" style="padding:0;">
+    <div style="padding:1.25rem 1.75rem; border-bottom:1px solid var(--border);">
+      <h3 style="font-size:1rem; font-weight:700;">Cambios de precio</h3>
+    </div>
+    {% if history %}
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Precio anterior</th>
+            <th>Precio nuevo</th>
+            <th>Cambio</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for h in history %}
+          <tr>
+            <td style="color:var(--text-muted);">
+              {{ h.changed_at.strftime('%d/%m/%Y %H:%M') }}
+            </td>
+            <td style="text-decoration:line-through; color:var(--text-muted);">
+              ${{ "%.2f"|format(h.old_price) }}
+            </td>
+            <td><strong>${{ "%.2f"|format(h.new_price) }}</strong></td>
+            <td>
+              {% if h.change_percent > 0 %}
+              <span style="color:var(--danger); font-weight:600;">
+                <i data-lucide="trending-up" style="width:13px;height:13px;vertical-align:middle;"></i>
+                +{{ h.change_percent }}%
+              </span>
+              {% elif h.change_percent < 0 %}
+              <span style="color:var(--success); font-weight:600;">
+                <i data-lucide="trending-down" style="width:13px;height:13px;vertical-align:middle;"></i>
+                {{ h.change_percent }}%
+              </span>
+              {% else %}
+              <span style="color:var(--text-muted);">Sin cambio</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon"><i data-lucide="trending-up"></i></div>
+      <p>Sin cambios de precio registrados.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

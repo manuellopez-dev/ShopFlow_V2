@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Pedido #{{ order.id }} — ShopFlow{% endblock %}
+
+{% block content %}
+<div style="max-width:640px; margin:0 auto;">
+  <div class="page-header">
+    <h1>Pedido #{{ order.id }}</h1>
+    <a href="{{ url_for('client.my_orders') }}" class="btn btn-outline btn-sm">← Mis pedidos</a>
+  </div>
+
+  <div class="card" style="margin-bottom:1.25rem;">
+    <div style="display:flex; gap:2rem; flex-wrap:wrap;">
+      <div>
+        <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase;
+                    letter-spacing:0.5px; margin-bottom:4px;">Estado</div>
+        <span class="status-badge status-{{ order.status }}">{{ order.status }}</span>
+      </div>
+      <div>
+        <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase;
+                    letter-spacing:0.5px; margin-bottom:4px;">Fecha</div>
+        <strong>{{ order.created_at.strftime('%d/%m/%Y %H:%M') }}</strong>
+      </div>
+      <div>
+        <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase;
+                    letter-spacing:0.5px; margin-bottom:4px;">Pago</div>
+        {% if order.payment_status == 'paid' %}
+          <span style="color:var(--success); font-weight:600;">✅ Pagado</span>
+        {% elif order.payment_status == 'failed' %}
+          <span style="color:var(--danger); font-weight:600;">❌ Fallido</span>
+        {% else %}
+          <span style="color:var(--warning); font-weight:600;">⏳ Pendiente</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="padding:0; margin-bottom:1.25rem;">
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Precio unitario</th>
+            <th>Cantidad</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in order.items %}
+          <tr>
+            <td><strong>{{ item.product.name }}</strong></td>
+            <td>${{ "%.2f"|format(item.unit_price) }}</td>
+            <td>{{ item.quantity }}</td>
+            <td><strong>${{ "%.2f"|format(item.subtotal) }}</strong></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="cart-total" style="margin-top:0; padding-top:0; border-top:none;">
+      <span style="color:var(--text-muted);">Total</span>
+      <span class="cart-total-amount">${{ "%.2f"|format(order.total) }}</span>
+    </div>
+
+    {% if order.payment_status != 'paid' %}
+    <div class="divider"></div>
+    <a href="{{ url_for('client.payment', order_id=order.id) }}"
+       class="btn btn-primary btn-full btn-lg">
+      💳 Pagar ahora
+    </a>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

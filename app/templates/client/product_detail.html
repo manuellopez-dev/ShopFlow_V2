@@ -1,0 +1,375 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }} — ShopFlow{% endblock %}
+
+{% block content %}
+
+<!-- Breadcrumb -->
+<div style="display:flex; align-items:center; gap:8px; margin-bottom:1.5rem;
+            font-size:0.85rem; color:var(--text-muted);">
+  <a href="{{ url_for('client.catalog') }}" style="color:var(--text-muted); text-decoration:none;">
+    <i data-lucide="grid" style="width:14px;height:14px;vertical-align:middle;"></i>
+    Catálogo
+  </a>
+  <i data-lucide="chevron-right" style="width:14px;height:14px;"></i>
+  <span style="color:var(--primary); font-weight:600;">{{ product.name }}</span>
+</div>
+
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:2rem; margin-bottom:2rem;">
+
+  <!-- ─── Imagen ──────────────────────────────────── -->
+  <div class="product-detail-img card" style="padding:0; overflow:hidden;">
+    <div style="background:linear-gradient(135deg, var(--primary-light), var(--bg2));
+                height:380px; display:flex; align-items:center; justify-content:center;
+                position:relative; overflow:hidden;">
+      {% if product.image_url %}
+      <img src="{{ product.image_url }}" alt="{{ product.name }}"
+           style="width:100%; height:100%; object-fit:cover;">
+      {% else %}
+      <i data-lucide="shopping-bag"
+         style="width:100px; height:100px; stroke:var(--primary); stroke-width:1; opacity:0.5;"></i>
+      {% endif %}
+      {% if product.stock == 0 %}
+      <div style="position:absolute; top:1rem; right:1rem;">
+        <span class="status-badge status-cancelled">Sin stock</span>
+      </div>
+      {% else %}
+      <div style="position:absolute; top:1rem; right:1rem;">
+        <span class="status-badge status-delivered">En stock</span>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ─── Info ────────────────────────────────────── -->
+  <div style="display:flex; flex-direction:column; gap:1.25rem;">
+
+    <div>
+      <div class="product-cat" style="margin-bottom:0.5rem;">
+        <i data-lucide="tag" style="width:12px;height:12px;vertical-align:middle;"></i>
+        {{ product.category.name if product.category else 'Sin categoría' }}
+      </div>
+      <h1 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:1.9rem;
+                 font-weight:800; color:var(--accent); line-height:1.2; letter-spacing:-0.5px;">
+        {{ product.name }}
+      </h1>
+    </div>
+
+    <!-- Estrellas -->
+    <div style="display:flex; align-items:center; gap:10px;">
+      <div style="display:flex; gap:3px;">
+        {% for i in range(5) %}
+        <i data-lucide="star"
+           style="width:18px;height:18px;
+                  stroke:{% if i < product.avg_rating|int %}#f59e0b{% else %}#e2e8f0{% endif %};
+                  fill:{% if i < product.avg_rating|int %}#f59e0b{% else %}none{% endif %};"></i>
+        {% endfor %}
+      </div>
+      <span style="font-weight:600; color:var(--text);">{{ "%.1f"|format(product.avg_rating) }}</span>
+      <span style="color:var(--text-muted); font-size:0.875rem;">
+        ({{ product.review_count }} reseña{{ 's' if product.review_count != 1 }})
+      </span>
+    </div>
+
+    <!-- Precio -->
+    <div style="background:var(--primary-light); border-radius:var(--radius-lg);
+                padding:1.25rem; border:1px solid #bfdbfe;">
+      <div style="font-size:0.75rem; color:var(--primary); font-weight:600;
+                  text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">
+        Precio
+      </div>
+      <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:2.2rem;
+                  font-weight:800; color:var(--accent);">
+        ${{ "%.2f"|format(product.price) }}
+      </div>
+    </div>
+
+    {% if product.quantity_discounts %}
+<div style="margin-top:0.75rem; display:flex; flex-direction:column; gap:4px;">
+  <div style="font-size:0.72rem; font-weight:700; text-transform:uppercase;
+              letter-spacing:0.5px; color:var(--text-muted);">
+    Descuentos por cantidad
+  </div>
+  {% for d in product.quantity_discounts|sort(attribute='min_qty') %}
+  <div style="display:flex; align-items:center; gap:8px; font-size:0.875rem;">
+    <span class="status-badge status-delivered">{{ d.min_qty }}+ uds</span>
+    <span style="color:var(--success); font-weight:700;">{{ d.discount }}% OFF</span>
+    <span style="color:var(--text-muted);">
+      → ${{ "%.2f"|format(product.get_discounted_price(d.min_qty)) }} c/u
+    </span>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+    <!-- Stock -->
+    <div style="display:flex; align-items:center; gap:8px; font-size:0.875rem;">
+      <i data-lucide="{{ 'package-check' if product.stock > 0 else 'package-x' }}"
+         style="width:16px;height:16px; stroke:{{ 'var(--success)' if product.stock > 0 else 'var(--danger)' }};"></i>
+      <span class="{{ 'in-stock' if product.stock > 0 else 'out-stock' }}" style="font-weight:600;">
+        {% if product.stock > 0 %}
+          {{ product.stock }} unidades disponibles
+        {% else %}
+          Producto agotado
+        {% endif %}
+      </span>
+    </div>
+
+    <!-- Acciones -->
+    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+      {% if product.stock > 0 %}
+      <form class="add-to-cart-form" data-product="{{ product.id }}"
+                  style="display:flex; gap:0.75rem;">
+        <div style="display:flex; align-items:center; border:1.5px solid var(--border);
+                    border-radius:var(--radius); overflow:hidden; background:var(--surface);">
+          <button type="button" onclick="changeQty(-1)"
+                  style="border:none; background:none; padding:0 0.85rem; font-size:1.1rem;
+                         cursor:pointer; color:var(--text-muted); height:44px;">−</button>
+          <input type="number" name="qty" id="qty-input" value="1" min="1" max="{{ product.stock }}"
+                  class="qty-input" style="width:52px; border:none; text-align:center; font-weight:600;
+                        font-size:0.95rem; padding:0; box-shadow:none;">
+          <button type="button" onclick="changeQty(1)"
+                  style="border:none; background:none; padding:0 0.85rem; font-size:1.1rem;
+                         cursor:pointer; color:var(--text-muted); height:44px;">+</button>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg" style="flex:1;">
+          <i data-lucide="shopping-cart" style="width:16px;height:16px;"></i>
+          Agregar al carrito
+        </button>
+      </form>
+      {% else %}
+      <button class="btn btn-outline btn-lg btn-full" disabled style="opacity:0.5;">
+        <i data-lucide="x-circle" style="width:16px;height:16px;"></i>
+        Sin stock disponible
+      </button>
+      {% endif %}
+
+      <a href="{{ url_for('reviews.toggle_favorite', product_id=product.id) }}"
+         class="btn btn-outline btn-lg">
+        <i data-lucide="heart" style="width:16px;height:16px;"></i>
+        Agregar a favoritos
+      </a>
+    </div>
+
+    <!-- Descripción -->
+    {% if product.description %}
+    <div style="border-top:1px solid var(--border); padding-top:1rem;">
+      <div style="font-size:0.72rem; font-weight:700; text-transform:uppercase;
+                  letter-spacing:0.6px; color:var(--text-muted); margin-bottom:0.5rem;">
+        Descripción
+      </div>
+      <p style="color:var(--text-muted); line-height:1.7; font-size:0.9rem;">
+        {{ product.description }}
+      </p>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+
+<!-- ─── Reseñas ──────────────────────────────────── -->
+<div style="display:grid; grid-template-columns:1fr 360px; gap:1.75rem; align-items:start;">
+
+  <!-- Lista de reseñas -->
+  <div class="card">
+    <h3 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:1.1rem;
+               font-weight:700; margin-bottom:1.5rem; display:flex; align-items:center; gap:8px;">
+      <i data-lucide="message-square" style="width:18px;height:18px; stroke:var(--primary);"></i>
+      Reseñas
+      <span style="background:var(--primary-light); color:var(--primary); font-size:0.75rem;
+                   padding:2px 10px; border-radius:20px; font-weight:700;">
+        {{ product.review_count }}
+      </span>
+    </h3>
+
+    {% if reviews %}
+      <div style="display:flex; flex-direction:column; gap:0;">
+        {% for r in reviews %}
+        <div style="padding:1.25rem 0; border-bottom:1px solid var(--border);">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.5rem;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div style="width:34px; height:34px; background:var(--primary); border-radius:50%;
+                          display:flex; align-items:center; justify-content:center;
+                          color:white; font-size:0.78rem; font-weight:700; flex-shrink:0;">
+                {{ r.user.name[0].upper() }}
+              </div>
+              <div>
+                <div style="font-weight:600; font-size:0.9rem;">{{ r.user.name }}</div>
+                <div style="color:var(--text-muted); font-size:0.75rem;">
+                  {{ r.created_at.strftime('%d/%m/%Y') }}
+                </div>
+              </div>
+            </div>
+            <div style="display:flex; gap:2px;">
+              {% for i in range(5) %}
+              <i data-lucide="star"
+                 style="width:13px;height:13px;
+                        stroke:{% if i < r.rating %}#f59e0b{% else %}#e2e8f0{% endif %};
+                        fill:{% if i < r.rating %}#f59e0b{% else %}none{% endif %};"></i>
+              {% endfor %}
+            </div>
+          </div>
+          {% if r.comment %}
+          <p style="color:var(--text-muted); font-size:0.875rem; margin:0; line-height:1.6;
+                    padding-left:44px;">
+            {{ r.comment }}
+          </p>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state" style="padding:2rem 0;">
+        <div class="empty-icon">
+          <i data-lucide="message-circle"></i>
+        </div>
+        <p>Sin reseñas aún. ¡Sé el primero!</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Escribir reseña -->
+  <div>
+    {% if current_user and not user_reviewed %}
+    <div class="card">
+      <h3 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:1rem;
+                 font-weight:700; margin-bottom:1.25rem; display:flex; align-items:center; gap:8px;">
+        <i data-lucide="edit-3" style="width:16px;height:16px; stroke:var(--primary);"></i>
+        Escribir reseña
+      </h3>
+      <form method="POST" action="{{ url_for('reviews.add_review', product_id=product.id) }}">
+        <div class="form-group">
+          <label>Calificación</label>
+          <div class="star-rating">
+            {% for i in range(1, 6) %}
+            <input type="radio" name="rating" id="star{{ i }}" value="{{ i }}"
+                   {{ 'checked' if i == 5 }} style="display:none;">
+            <label for="star{{ i }}" class="star-label">
+              <i data-lucide="star" style="width:28px;height:28px;"></i>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Comentario (opcional)</label>
+          <textarea name="comment" rows="4"
+                    placeholder="¿Qué te pareció el producto?"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full">
+          <i data-lucide="send" style="width:14px;height:14px;"></i>
+          Publicar reseña
+        </button>
+      </form>
+    </div>
+    {% elif user_reviewed %}
+    <div class="card" style="text-align:center; padding:2rem;">
+      <div style="width:48px;height:48px; background:var(--success-bg); border-radius:50%;
+                  display:flex; align-items:center; justify-content:center; margin:0 auto 1rem;">
+        <i data-lucide="check-circle" style="width:24px;height:24px; stroke:var(--success);"></i>
+      </div>
+      <p style="font-weight:600; color:var(--text);">Ya escribiste una reseña</p>
+      <p style="color:var(--text-muted); font-size:0.875rem; margin-top:0.25rem;">
+        Gracias por tu opinión
+      </p>
+    </div>
+    {% elif not current_user %}
+    <div class="card" style="text-align:center; padding:2rem;">
+      <div style="width:48px;height:48px; background:var(--primary-light); border-radius:50%;
+                  display:flex; align-items:center; justify-content:center; margin:0 auto 1rem;">
+        <i data-lucide="log-in" style="width:24px;height:24px; stroke:var(--primary);"></i>
+      </div>
+      <p style="font-weight:600; margin-bottom:1rem;">Inicia sesión para reseñar</p>
+      <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-full">
+        Iniciar sesión
+      </a>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ─── Productos relacionados ───────────────────── -->
+{% if related %}
+<div style="margin-top:2.5rem;">
+  <h3 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:1.25rem;
+             font-weight:700; margin-bottom:1.5rem; display:flex; align-items:center; gap:8px;">
+    <i data-lucide="layers" style="width:20px;height:20px;stroke:var(--primary);"></i>
+    Productos relacionados
+  </h3>
+  <div class="product-grid">
+    {% for p in related %}
+    <div class="product-card reveal">
+      <div class="product-img">
+        {% if p.image_url %}
+        <img src="{{ p.image_url }}" alt="{{ p.name }}"
+             style="width:100%; height:100%; object-fit:cover;">
+        {% else %}
+        <i data-lucide="shopping-bag"></i>
+        {% endif %}
+      </div>
+      <div class="product-body">
+        <div class="product-cat">
+          <i data-lucide="tag" style="width:11px;height:11px;vertical-align:middle;"></i>
+          {{ p.category.name if p.category else 'Sin categoría' }}
+        </div>
+        <a href="{{ url_for('client.product_detail', product_id=p.id) }}"
+           style="text-decoration:none; color:inherit;">
+          <div class="product-name">{{ p.name }}</div>
+        </a>
+        <div style="display:flex; align-items:center; gap:5px; margin-top:4px;">
+          <div style="display:flex; gap:2px;">
+            {% for i in range(5) %}
+            <i data-lucide="star"
+               style="width:13px;height:13px;
+                      stroke:{% if i < p.avg_rating|int %}#f59e0b{% else %}#e2e8f0{% endif %};
+                      fill:{% if i < p.avg_rating|int %}#f59e0b{% else %}none{% endif %};"></i>
+            {% endfor %}
+          </div>
+          <span style="color:var(--text-muted); font-size:0.78rem;">({{ p.review_count }})</span>
+        </div>
+        <div class="product-price">${{ "%.2f"|format(p.price) }}</div>
+        {% if p.quantity_discounts %}
+        <div style="margin-top:4px;">
+          {% for d in p.quantity_discounts|sort(attribute='min_qty') %}
+          <span style="font-size:0.72rem; color:var(--success); font-weight:600;">
+            {{ d.min_qty }}+ uds → {{ d.discount }}% OFF
+          </span>
+          {% endfor %}
+        </div>
+        {% endif %}
+        <div class="product-stock {{ 'in-stock' if p.stock > 0 else 'out-stock' }}">
+          <i data-lucide="{{ 'check-circle' if p.stock > 0 else 'x-circle' }}"
+             style="width:12px;height:12px;vertical-align:middle;"></i>
+          {{ p.stock ~ ' en stock' if p.stock > 0 else 'Sin stock' }}
+        </div>
+      </div>
+      <div class="product-actions">
+        <a href="{{ url_for('reviews.toggle_favorite', product_id=p.id) }}"
+           class="btn btn-outline btn-sm">
+          <i data-lucide="heart" style="width:14px;height:14px;"></i>
+        </a>
+        {% if p.stock > 0 %}
+        <form class="add-to-cart-form" data-product="{{ p.id }}"
+              style="display:flex; gap:0.5rem; flex:1;">
+          <input type="number" name="qty" value="1" min="1" max="{{ p.stock }}"
+                 style="width:64px;" class="qty-input">
+          <button type="submit" class="btn btn-primary" style="flex:1;">
+            <i data-lucide="shopping-cart" style="width:14px;height:14px;"></i>
+            Agregar
+          </button>
+        </form>
+        {% else %}
+        <button class="btn btn-outline btn-full" disabled style="opacity:0.5; flex:1;">
+          Sin stock
+        </button>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/product_detail.js') }}"></script>
+{% endblock %}

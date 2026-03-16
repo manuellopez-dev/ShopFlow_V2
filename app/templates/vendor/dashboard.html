@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block title %}Dashboard Vendedor — ShopFlow{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Mi Dashboard</h1>
+    <p style="color:var(--text-muted); font-size:0.875rem; margin-top:2px;">
+      Bienvenido, {{ me.name }}
+    </p>
+  </div>
+  <a href="{{ url_for('vendor.create_product') }}" class="btn btn-primary">
+    <i data-lucide="plus" style="width:15px;height:15px;"></i>
+    Nuevo producto
+  </a>
+</div>
+
+<!-- Stats -->
+<div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); margin-bottom:2rem;">
+  <div class="stat-card">
+    <div class="stat-icon"><i data-lucide="box"></i></div>
+    <div class="stat-value">{{ my_products }}</div>
+    <div class="stat-label">Productos activos</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon"><i data-lucide="shopping-cart"></i></div>
+    <div class="stat-value">{{ total_sold }}</div>
+    <div class="stat-label">Unidades vendidas</div>
+  </div>
+  <div class="stat-card" style="border-top-color:var(--success);">
+    <div class="stat-icon" style="background:var(--success-bg);">
+      <i data-lucide="dollar-sign" style="stroke:var(--success);"></i>
+    </div>
+    <div class="stat-value" style="font-size:1.5rem;">
+      ${{ "%.0f"|format(total_revenue) }}
+    </div>
+    <div class="stat-label">Ingresos totales</div>
+  </div>
+  <div class="stat-card" style="border-top-color:{{ 'var(--danger)' if low_stock > 0 else 'var(--primary)' }};">
+    <div class="stat-icon" style="background:{{ 'var(--danger-bg)' if low_stock > 0 else 'var(--primary-light)' }};">
+      <i data-lucide="alert-triangle" style="stroke:{{ 'var(--danger)' if low_stock > 0 else 'var(--primary)' }};"></i>
+    </div>
+    <div class="stat-value" style="color:{{ 'var(--danger)' if low_stock > 0 else 'inherit' }};">
+      {{ low_stock }}
+    </div>
+    <div class="stat-label">Stock bajo (≤5)</div>
+  </div>
+</div>
+
+<!-- Gráficas -->
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; margin-bottom:1.5rem;">
+  <div class="card reveal">
+    <h3 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:1rem; font-weight:700; margin-bottom:1.25rem;">
+      📈 Ventas últimos 7 días
+    </h3>
+    <canvas id="salesChart" height="200"></canvas>
+  </div>
+  <div class="card reveal">
+    <h3 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:1rem; font-weight:700; margin-bottom:1.25rem;">
+      🏆 Productos más vendidos
+    </h3>
+    <canvas id="topChart" height="200"></canvas>
+  </div>
+</div>
+
+<!-- Tabla top productos -->
+<div class="card reveal" style="margin-bottom:1.5rem;">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+    <h3 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:1rem; font-weight:700;">
+      <i data-lucide="bar-chart-2" style="width:16px;height:16px;vertical-align:middle;stroke:var(--primary);"></i>
+      Resumen por producto
+    </h3>
+    <a href="{{ url_for('vendor.products') }}" class="btn btn-outline btn-sm">Ver todos</a>
+  </div>
+  {% if top_products %}
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Unidades vendidas</th>
+          <th>Ingresos</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in top_products %}
+        <tr>
+          <td><strong>{{ p.name }}</strong></td>
+          <td>
+            <span class="status-badge status-confirmed">{{ p.total_sold }} uds</span>
+          </td>
+          <td><strong style="color:var(--success);">${{ "%.2f"|format(p.revenue) }}</strong></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state" style="padding:2rem 0;">
+    <div class="empty-icon"><i data-lucide="bar-chart"></i></div>
+    <p>Aún no hay ventas de tus productos.</p>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Pedidos recientes -->
+<div class="card reveal" style="padding:0;">
+  <div style="padding:1.25rem 1.75rem; border-bottom:1px solid var(--border);
+              display:flex; justify-content:space-between; align-items:center;">
+    <h3 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:1rem; font-weight:700;">
+      Ventas recientes
+    </h3>
+  </div>
+  {% if recent_items %}
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Pedido</th>
+          <th>Producto</th>
+          <th>Cantidad</th>
+          <th>Precio unit.</th>
+          <th>Subtotal</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in recent_items %}
+        <tr>
+          <td><strong>#{{ item.order_id }}</strong></td>
+          <td>{{ item.product.name }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>${{ "%.2f"|format(item.unit_price) }}</td>
+          <td><strong>${{ "%.2f"|format(item.quantity * item.unit_price) }}</strong></td>
+          <td>
+            <span class="status-badge status-{{ item.order.status }}">
+              {{ item.order.status }}
+            </span>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon"><i data-lucide="shopping-bag"></i></div>
+    <p>Sin ventas aún.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  window.VENDOR = {
+    dayLabels:  {{ day_labels|safe }},
+    salesByDay: {{ sales_by_day|safe }},
+    topNames:   {{ top_names|safe }},
+    topSales:   {{ top_sales|safe }},
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/vendor_dashboard.js') }}"></script>
+{% endblock %}

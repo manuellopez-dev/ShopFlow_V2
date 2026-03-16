@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+{% block title %}Diagrama de Base de Datos — ShopFlow{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Diagrama de Base de Datos</h1>
+    <p style="color:var(--text-muted); font-size:0.875rem; margin-top:2px;">
+      Estructura y relaciones del modelo de datos de ShopFlow
+    </p>
+  </div>
+</div>
+
+<!-- Leyenda -->
+<div class="card" style="margin-bottom:1.5rem; display:flex; gap:2rem; flex-wrap:wrap; align-items:center;">
+  <div style="font-size:0.8rem; font-weight:600; color:var(--text-muted);">Leyenda:</div>
+  <div style="display:flex; align-items:center; gap:6px; font-size:0.8rem;">
+    <div style="width:14px;height:14px;background:#eff6ff;border:2px solid #2563eb;border-radius:3px;"></div>
+    Tabla principal
+  </div>
+  <div style="display:flex; align-items:center; gap:6px; font-size:0.8rem;">
+    <div style="width:14px;height:14px;background:#f0fdf4;border:2px solid #059669;border-radius:3px;"></div>
+    Tabla de relación
+  </div>
+  <div style="display:flex; align-items:center; gap:6px; font-size:0.8rem;">
+    <div style="width:14px;height:14px;background:#fdf4ff;border:2px solid #7c3aed;border-radius:3px;"></div>
+    Tabla de historial/log
+  </div>
+  <div style="display:flex; align-items:center; gap:6px; font-size:0.8rem;">
+    <span style="color:var(--warning); font-weight:700;">PK</span> Llave primaria
+  </div>
+  <div style="display:flex; align-items:center; gap:6px; font-size:0.8rem;">
+    <span style="color:var(--primary); font-weight:700;">FK</span> Llave foránea
+  </div>
+</div>
+
+<!-- Diagrama -->
+<div style="overflow-x:auto;">
+<div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:1.5rem; min-width:900px;">
+
+  <!-- Users -->
+  <div class="db-table" style="border-color:#2563eb;">
+    <div class="db-table-header" style="background:#eff6ff; border-color:#2563eb; color:#2563eb;">
+      <i data-lucide="users" style="width:15px;height:15px;"></i>
+      users
+    </div>
+    <div class="db-table-body">
+      <div class="db-field"><span class="db-pk">PK</span> id <span class="db-type">INT</span></div>
+      <div class="db-field db-divider">name <span class="db-type">VARCHAR(120)</span></div>
+      <div class="db-field">email <span class="db-type">VARCHAR(120)</span></div>
+      <div class="db-field">password_hash <span class="db-type">VARCHAR(255)</span></div>
+      <div class="db-field">role <span class="db-type">ENUM(admin,vendor,client)</span></div>
+      <div class="db-field">is_active <span class="db-type">BOOLEAN</span></div>
+      <div class="db-field">totp_secret <span class="db-type">VARCHAR(32)</span></div>
+      <div class="db-field">totp_enabled <span class="db-type">BOOLEAN</span></div>
+      <div class="db-field">reset_token <span class="db-type">VARCHAR(100)</span></div>
+      <div class="db-field">reset_token_expiry <span class="db-type">DATETIME</span></div>
+      <div class="db-field">created_at <span class="db-type">DATETIME</span></div>
+    </div>
+  </div>
+
+  <!-- Products -->
+  <div class="db-table" style="border-color:#2563eb;">
+    <div class="db-table-header" style="background:#eff6ff; border-color:#2563eb; color:#2563eb;">
+      <i data-lucide="box" style="width:15px;height:15px;"></i>
+      products
+    </div>
+    <div class="db-table-body">
+      <div class="db-field"><span class="db-pk">PK</span> id <span class="db-type">INT</span></div>
+      <div class="db-field db-divider"><span class="db-fk">FK</span> vendor_id → users.id</div>
+      <div class="db-field"><span class="db-fk">FK</span> category_id → categories.id</div>
+      <div class="db-field db-divider">name <span class="db-type">VARCHAR(120)</span></div>
+      <div class="db-field">description <span class="db-type">TEXT</span></div>
+      <div class="db-field">price <span class="db-type">DECIMAL(10,2)</span></div>
+      <div class="db-field">stock <span class="db-type">INT</span></div>
+      <div class="db-field">min_stock <span class="db-type">INT</span></div>
+      <div class="db-field">image_url <span class="db-type">VARCHAR(500)</span></div>
+      <div class="db-field">is_active <span class="db-type">BOOLEAN</span></div>
+      <div class="db-field">created_at <span class="db-type">DATETIME</span></div>
+    </div>
+  </div>
+
+  <!-- Categories -->
+  <div class="db-table" style="border-color:#2563eb;">
+    <div class="db-table-header" style="background:#eff6ff; border-color:#2563eb; color:#2563eb;">
+      <i data-lucide="tag" style="width:15px;height:15px;"></i>
+      categories
+    </div>
+    <div class="db-table-body">
+      <div class="db-field"><span class="db-pk">PK</span> id <span class="db-type">INT</span></div>
+      <div class="db-field db-divider">name <span class="db-type">VARCHAR(80)</span></div>
+      <div class="db-field">is_active <span class="db-type">BOOLEAN</span></div>
+      <div class="db-field">created_at <span class="db-type">DATETIME</span></div>
+    </div>
+  </div>
+
+  <!-- Orders -->
+  <div class="db-table" style="border-color:#2563eb;">
+    <div class="db-table-header" style="background:#eff6ff; border-color:#2563eb; color:#2563eb;">
+      <i data-lucide="package" style="width:15px;height:15px;"></i>
+      orders
+    </div>
+    <div class="db-table-body">
+      <div class="db-field"><span class="db-pk">PK</span> id <span class="db-type">INT</span></div>
+      <div class="db-field db-divider"><span class="db-fk">FK</span> client_id → users.id</div>
+      <div class="db-field db-divider">status <span class="db-type">VARCHAR(20)</span></div>
+      <div class="db-field">total <span class="db-type">DECIMAL(10,2)</span></div>
+      <div class="db-field">discount <span class="db-type">DECIMAL(10,2)</span></div>
+      <div class="db-field">coupon_code <span class="db-type">VARCHAR(50)</span></div>
+      <div class="db-field">payment_method <span class="db-type">VARCHAR(20)</span></div>
+      <div class="db-field">payment_id <span class="db-type">VARCHAR(200)</span></div>
+      <div class="db-field">payment_status <span class="db-type">VARCHAR(20)</span></div>
+      <div class="db-field">created_at <span class="db-type">DATETIME</span></div>
+    </div>
+  </div>
+
+  <!-- Order Items -->
+  <div class="db-table" style="border-color:#059669;">
+    <div class="db-table-header" style="background:#f0fdf4; border-color:#059669; color:#059669;">
+      <i data-lucide="list" style="width:15px;height:15px;"></i>
+      order_items
+    </div>
+    <div class="db-table-body">
+      <div class="db-field"><span class="db-pk">PK</span> id <span class="db-type">INT</span></div>
+      <div class="db-field db-divider"><span class="db-fk">FK</span> order_id → orders.id</div>
+      <div class="db-field"><span class="db-fk">FK</span> product_id → products.id</div>
+      <div class="db-field db-divider">quantity <span class="db-type">INT</span></div>
+      <div class="db-field">unit_price <span class="db-type">DECIMAL(10,2)</span></div>
+    </div>
+  </div>
+
+  <!-- Coupons -->
+  <div class="db-table" style="border-color:#2563eb;">
+    <div class="db-table-header" style="background:#eff6ff; border-color:#2563eb; color:#2563eb;">
+      <i data-lucide="ticket" style="width:15px;height:15px;"></i>
+      coupons
+    </div>
+    <div class="db-table-body">
+      <div class="db-field"><span class="db-pk">PK</span> id <span class="db-type">INT</span></div>
+      <div class="db-field db-divider">code <span class="db-type">VARCHAR(50) UNIQUE</span></div>
+      <div class="db-field">discount_type <span class="db-type">ENUM(percent,fixed)</span></div>
+      <div class="db-field">discount_value <span class="db-type">DECIMAL(10,2)</span></div>
+      <div class="db-field">min_order <span class="db-type">DECIMAL(10,2)</span></div>
+      <div class="db-field">max_uses <span class="db-type">INT</span></div>
+      <div class="db-field">used_count <span class="db-type">INT</span></div>
+      <div class="db-field">is_active <span class="db-type">BOOLEAN</span></div>
+      <div class="db-field">expires_at <span class="db-type">DATETIME</span></div>
+      <div class="db-field">created_at <span class="db-type">DATETIME</span></div>
+    </div>
+  </div>
+
+  <!-- Reviews -->
+  <div class="db-table" style="border-color:#059669;">
+    <div class="db-table-header" style="background:#f0fdf4; border-color:#059669; color:#059669;">
+      <i data-lucide="star" style="width:15px;height:15px;"></i>
+      reviews
+    </div>
+    <div class="db-table-body">
+      <div class="db-field"><span class="db-pk">PK</span> id <span class="db-type">INT</span></div>
+      <div class="db-field db-divider"><span class="db-fk">FK</span> user_id → users.id</div>
+      <div class="db-field"><span class="db-fk">FK</span> product_id → products.id</div>
+      <div class="db-field db-divider">rating <span class="db-type">INT(1-5)</span></div>
+      <div class="db-field">comment <span class="db-type">TEXT</span></div>
+      <div class="db-field">created_at <span class="db-type">DATETIME</span></div>
+    </div>
+  </div>
+
+  <!-- Favorites -->
+  <div class="db-table" style="border-color:#059669;">
+    <div class="db-table-header" style="background:#f0fdf4; border-color:#059669; color:#059669;">
+      <i data-lucide="heart" style="width:15px;height:15px;"></i>
+      favorites
+    </div>
+    <div class="db-table-body">
+      <div class="db-field"><span class="db-pk">PK</span> id <span class="db-type">INT</span></div>
+      <div class="db-field db-divider"><span class="db-fk">FK</span> user_id → users.id</div>
+      <div class="db-field"><span class="db-fk">FK</span> product_id → products.id</div>
+      <div class="db-field db-divider">created_at <span class="db-type">DATETIME</span></div>
+    </div>
+  </div>
+
+  <!-- Quantity Discounts -->
+  <div class="db-table" style="border-color:#059669;">
+    <div class="db-table-header" style="background:#f0fdf4; border-color:#059669; color:#059669;">
+      <i data-lucide="percent" style="width:15px;height:15px;"></i>
+      quantity_discounts
+    </div>
+    <div class="db-table-body">
+      <div class="db-field"><span class="db-pk">PK</span> id <span class="db-type">INT</span></div>
+      <div class="db-field db-divider"><span class="db-fk">FK</span> product_id → products.id</div>
+      <div class="db-field db-divider">min_qty <span class="db-type">INT</span></div>
+      <div class="db-field">discount <span class="db-type">DECIMAL(5,2)</span></div>
+      <div class="db-field">created_at <span class="db-type">DATETIME</span></div>
+    </div>
+  </div>
+
+  <!-- Price History -->
+  <div class="db-table" style="border-color:#7c3aed;">
+    <div class="db-table-header" style="background:#fdf4ff; border-color:#7c3aed; color:#7c3aed;">
+      <i data-lucide="trending-up" style="width:15px;height:15px;"></i>
+      price_history
+    </div>
+    <div class="db-table-body">
+      <div class="db-field"><span class="db-pk">PK</span> id <span class="db-type">INT</span></div>
+      <div class="db-field db-divider"><span class="db-fk">FK</span> product_id → products.id</div>
+      <div class="db-field"><span class="db-fk">FK</span> changed_by → users.id</div>
+      <div class="db-field db-divider">old_price <span class="db-type">DECIMAL(10,2)</span></div>
+      <div class="db-field">new_price <span class="db-type">DECIMAL(10,2)</span></div>
+      <div class="db-field">changed_at <span class="db-type">DATETIME</span></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- Relaciones -->
+<div class="card" style="margin-top:1.5rem;">
+  <h3 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:1rem; font-weight:700;
+             margin-bottom:1.25rem; display:flex; align-items:center; gap:8px;">
+    <i data-lucide="git-branch" style="width:16px;height:16px;stroke:var(--primary);"></i>
+    Relaciones principales
+  </h3>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+    {% set relations = [
+      ("users", "products", "1:N", "Un vendor puede tener muchos productos"),
+      ("users", "orders", "1:N", "Un cliente puede tener muchos pedidos"),
+      ("categories", "products", "1:N", "Una categoría tiene muchos productos"),
+      ("orders", "order_items", "1:N", "Un pedido tiene muchos items"),
+      ("products", "order_items", "1:N", "Un producto aparece en muchos items"),
+      ("users", "reviews", "1:N", "Un usuario puede hacer muchas reseñas"),
+      ("products", "reviews", "1:N", "Un producto tiene muchas reseñas"),
+      ("users", "favorites", "N:M", "Usuarios y productos — relación favoritos"),
+      ("products", "quantity_discounts", "1:N", "Un producto tiene varios descuentos"),
+      ("products", "price_history", "1:N", "Un producto tiene historial de precios"),
+    ] %}
+    {% for table1, table2, rel_type, desc in relations %}
+    <div style="display:flex; align-items:center; gap:10px; padding:0.6rem 0.85rem;
+                background:var(--surface2); border-radius:var(--radius); font-size:0.8rem;">
+      <code style="color:var(--primary); font-weight:600;">{{ table1 }}</code>
+      <span style="color:var(--text-muted);">→</span>
+      <code style="color:var(--success); font-weight:600;">{{ table2 }}</code>
+      <span class="status-badge status-confirmed" style="font-size:0.65rem;">{{ rel_type }}</span>
+      <span style="color:var(--text-muted); flex:1;">{{ desc }}</span>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Activar 2FA — ShopFlow</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="auth-wrapper">
+  <div class="auth-card" style="max-width:480px; text-align:center;">
+
+    <div class="auth-logo">
+      <h1>Shop<span>Flow</span></h1>
+      <p>Activar autenticación de dos factores</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="alerts">
+          {% for cat, msg in messages %}
+            <div class="alert alert-{{ cat }}">{{ msg }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <p style="color:var(--text-muted); font-size:0.875rem; margin-bottom:1.25rem;">
+      Escanea este código QR con <strong>Google Authenticator</strong>
+    </p>
+
+    <img src="data:image/png;base64,{{ qr_b64 }}" alt="QR Code"
+         style="border: 6px solid white; border-radius:12px; box-shadow:var(--shadow-md); width:200px; margin-bottom:1.25rem;">
+
+    <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1.5rem;">
+      O ingresa este código manualmente:<br>
+      <code style="background:var(--surface2); padding:6px 12px; border-radius:6px;
+                   font-size:0.9rem; letter-spacing:2px; border:1px solid var(--border);
+                   display:inline-block; margin-top:6px;">{{ secret }}</code>
+    </p>
+
+    <form method="POST">
+      <div class="form-group">
+        <label>Código de verificación</label>
+        <input type="text" name="code" required placeholder="000000" maxlength="6"
+               style="text-align:center; font-size:1.4rem; letter-spacing:8px; font-weight:600;">
+      </div>
+      <button type="submit" class="btn btn-primary btn-full btn-lg">
+        Activar 2FA
+      </button>
+    </form>
+
+  </div>
+</div>
+
+</body>
+</html>

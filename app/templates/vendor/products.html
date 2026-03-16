@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% from "macros/pagination.html" import paginate %}
+{% block title %}Mis Productos — ShopFlow{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Mis Productos</h1>
+  <a href="{{ url_for('vendor.create_product') }}" class="btn btn-primary">+ Nuevo producto</a>
+</div>
+
+<div class="card" style="padding:0;">
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Precio</th>
+          <th>Stock</th>
+          <th>Categoría</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in products %}
+        <tr>
+          <td><strong>{{ p.name }}</strong></td>
+          <td>${{ "%.2f"|format(p.price) }}</td>
+          <td>{{ p.stock }}</td>
+          <td style="color:var(--text-muted);">{{ p.category.name if p.category else '—' }}</td>
+          <td>
+            {% if p.is_active %}
+              <span style="color:var(--success); font-weight:600;">● Activo</span>
+            {% else %}
+              <span style="color:var(--danger); font-weight:600;">● Inactivo</span>
+            {% endif %}
+          </td>
+          <td style="display:flex; gap:0.5rem;">
+            <a href="{{ url_for('vendor.edit_product', product_id=p.id) }}"
+               class="btn btn-outline btn-sm">Editar</a>
+            <a href="{{ url_for('vendor.delete_product', product_id=p.id) }}"
+              class="btn btn-danger btn-sm"
+              data-confirm="¿Deseas desactivar '{{ p.name }}'? Ya no aparecerá en el catálogo.">
+              <i data-lucide="trash-2" style="width:13px;height:13px;"></i>
+            </a>
+            <a href="{{ url_for('vendor.manage_discounts', product_id=p.id) }}"
+               class="btn btn-outline btn-sm" title="Descuentos por cantidad">
+              <i data-lucide="percent" style="width:13px;height:13px;"></i>
+            </a>
+            <a href="{{ url_for('vendor.price_history', product_id=p.id) }}"
+              class="btn btn-outline btn-sm" title="Historial de precios">
+              <i data-lucide="trending-up" style="width:13px;height:13px;"></i>
+            </a>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6">
+            <div class="empty-state">
+              <div class="empty-icon">📦</div>
+              <p>No tienes productos aún.</p>
+              <a href="{{ url_for('vendor.create_product') }}" class="btn btn-primary">Crear primer producto</a>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {{ paginate(products, 'vendor.products') }}
+</div>
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — ShopFlow{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Dashboard</h1>
+  <a href="{{ url_for('auth.setup_2fa') }}" class="btn btn-outline btn-sm">Configurar 2FA</a>
+</div>
+
+<div class="stats-grid" style="grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));">
+  <div class="stat-card">
+    <div class="stat-value">{{ stats.users }}</div>
+    <div class="stat-label">Usuarios totales</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">{{ stats.products }}</div>
+    <div class="stat-label">Productos activos</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">{{ stats.orders }}</div>
+    <div class="stat-label">Pedidos totales</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">{{ stats.vendors }}</div>
+    <div class="stat-label">Vendedores</div>
+  </div>
+  <div class="stat-card" style="border-top-color:var(--success);">
+    <div class="stat-value" style="font-size:1.6rem;">
+      ${{ "%.0f"|format(stats.revenue) }}
+    </div>
+    <div class="stat-label">Ingresos totales</div>
+  </div>
+</div>
+
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; margin-bottom:1.5rem;">
+  <div class="card reveal">
+    <h3 style="font-family:'Playfair Display',serif; font-size:1rem; margin-bottom:1.25rem;">
+      Ingresos últimos 7 días
+    </h3>
+    <canvas id="revenueChart" height="200"></canvas>
+  </div>
+  <div class="card reveal">
+    <h3 style="font-family:'Playfair Display',serif; font-size:1rem; margin-bottom:1.25rem;">
+      Pedidos por estado
+    </h3>
+    <canvas id="statusChart" height="200"></canvas>
+  </div>
+</div>
+
+<div class="card reveal" style="margin-bottom:1.5rem;">
+  <h3 style="font-family:'Playfair Display',serif; font-size:1rem; margin-bottom:1.25rem;">
+    Productos más vendidos
+  </h3>
+  <canvas id="topChart" height="120"></canvas>
+</div>
+
+<div class="card reveal" style="padding:0;">
+  <div style="padding:1.25rem 1.75rem; border-bottom:1px solid var(--border);
+              display:flex; justify-content:space-between; align-items:center;">
+    <h3 style="font-family:'Playfair Display',serif; font-size:1rem;">Pedidos recientes</h3>
+    <a href="{{ url_for('admin.orders') }}" class="btn btn-outline btn-sm">Ver todos</a>
+  </div>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Cliente</th>
+          <th>Total</th>
+          <th>Estado</th>
+          <th>Pago</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in recent_orders %}
+        <tr>
+          <td><strong>#{{ order.id }}</strong></td>
+          <td>{{ order.client.name }}</td>
+          <td><strong>${{ "%.2f"|format(order.total) }}</strong></td>
+          <td><span class="status-badge status-{{ order.status }}">{{ order.status }}</span></td>
+          <td>
+            {% if order.payment_status == 'paid' %}
+              <span style="color:var(--success); font-weight:600;">Pagado</span>
+            {% else %}
+              <span style="color:var(--warning); font-weight:600;">Pendiente</span>
+            {% endif %}
+          </td>
+          <td style="color:var(--text-muted);">{{ order.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6">
+            <div class="empty-state">
+              <div class="empty-icon">Enviado</div>
+              <p>Sin pedidos aún.</p>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  window.DASHBOARD = {
+    dayLabels:    {{ day_labels|safe }},
+    revenueByDay: {{ revenue_by_day|safe }},
+    statusData:   {{ status_data|safe }},
+    topNames:     {{ top_names|safe }},
+    topSales:     {{ top_sales|safe }},
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}
