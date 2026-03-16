@@ -12,3 +12,4 @@ qrcode==7.4.2
 Pillow>=12.1.1
 stripe==14.4.1
 paypalrestsdk==1.13.3
+gunicorn
