@@ -194,8 +194,8 @@ FLASK_ENV=development
 | Rol | Email | Contraseña |
 |---|---|---|
 | Administrador | admin@shopflow.com | Admin123! |
-| Vendedor | vendedor@shopflow.com | Vendedor123! |
-| Cliente | cliente@shopflow.com | Cliente123! |
+| Vendedor | vendor@shopflow.com | Vendor123! |
+| Cliente | luismanuel141205@gmail.com | Client123! |
 
 > El Admin requiere 2FA. Usa Google Authenticator con el QR disponible en el panel de configuración.
 
