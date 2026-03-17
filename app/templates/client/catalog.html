@@ -11,10 +11,17 @@
   </div>
 </div>
 
-<div style="display:grid; grid-template-columns:260px 1fr; gap:1.75rem; align-items:start;">
+<!-- Botón filtros móvil -->
+<button class="btn btn-outline filter-toggle-btn" id="filter-toggle"
+        style="margin-bottom:1rem; width:100%;">
+  <i data-lucide="filter" style="width:14px;height:14px;"></i>
+  Filtros y búsqueda
+</button>
+
+<div class="catalog-grid" style="display:grid; grid-template-columns:260px 1fr; gap:1.75rem; align-items:start;">
 
   <!-- ─── Sidebar filtros ─────────────────────────── -->
-  <aside>
+  <aside class="catalog-sidebar">
     <form method="GET" id="filter-form">
       <input type="hidden" name="sort" id="sort-hidden" value="{{ sort }}">
       <div class="card" style="padding:1.25rem;">

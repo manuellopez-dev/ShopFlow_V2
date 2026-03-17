@@ -1785,3 +1785,195 @@ body.dark .role-vendor   { background: rgba(5,150,105,0.15);  color: #6ee7b7; bo
 body.dark .role-client   { background: rgba(124,58,237,0.15); color: #c4b5fd; border-color: #5b21b6; }
 body.dark .role-público  { background: var(--surface2); color: var(--text-muted); border-color: var(--border); }
 body.dark .role-autenticado { background: rgba(217,119,6,0.15); color: #fbbf24; border-color: #92400e; }
+
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE MÓVIL
+═══════════════════════════════════════════════════ */
+
+.nav-hamburger { display: none; }
+.filter-toggle-btn { display: none; }
+
+@media (max-width: 768px) {
+  .nav-hamburger { display: flex !important; }
+}
+
+/* ─── Navbar móvil ───────────────────────────────── */
+@media (max-width: 768px) {
+  nav {
+    padding: 0 1rem;
+    flex-wrap: wrap;
+    height: auto;
+    min-height: var(--nav-height);
+    gap: 0.5rem;
+  }
+
+  .nav-links {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.75rem 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .nav-links.open { display: flex; }
+
+  .nav-links a {
+    padding: 0.65rem 0.85rem;
+    font-size: 0.9rem;
+    border-radius: var(--radius);
+  }
+
+  .nav-divider { display: none; }
+
+  .nav-user {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  .nav-hamburger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.4rem;
+    color: var(--text);
+    margin-left: auto;
+  }
+
+  /* ─── Main ───────────────────────────────────── */
+  main {
+    padding: 1.25rem 0.85rem;
+  }
+
+  /* ─── Page header ────────────────────────────── */
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .page-header h1 { font-size: 1.4rem; }
+
+  /* ─── Stats grid ─────────────────────────────── */
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .stat-value { font-size: 1.6rem; }
+
+  /* ─── Catálogo con sidebar ───────────────────── */
+  .catalog-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Ocultar sidebar en móvil, mostrar filtros colapsables */
+  .catalog-sidebar {
+    display: none;
+  }
+
+  .catalog-sidebar.open {
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  .filter-toggle-btn {
+    display: flex !important;
+  }
+
+  /* ─── Product grid ───────────────────────────── */
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .product-img { height: 150px; }
+
+  .product-price { font-size: 1.1rem; }
+
+  .product-actions {
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 0.75rem;
+  }
+
+  .product-actions input[type="number"] {
+    width: 56px;
+  }
+
+  /* ─── Cards ──────────────────────────────────── */
+  .card { padding: 1.25rem; }
+
+  /* ─── Auth ───────────────────────────────────── */
+  .auth-wrapper { padding: 1rem; }
+  .auth-card {
+    padding: 1.5rem 1.25rem;
+    border-radius: var(--radius-lg);
+  }
+
+  /* ─── Hero ───────────────────────────────────── */
+  .hero { padding: 3rem 1.25rem; border-radius: var(--radius-lg); }
+  .hero h1 { font-size: 2rem; }
+  .hero p  { font-size: 0.95rem; }
+  .hero-btns { flex-direction: column; align-items: center; }
+
+  /* ─── Features grid ──────────────────────────── */
+  .features-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  /* ─── Tablas ─────────────────────────────────── */
+  .table-wrapper { overflow-x: auto; }
+  th, td { padding: 0.65rem 0.85rem; font-size: 0.8rem; }
+
+  /* ─── Dashboard gráficas ─────────────────────── */
+  .dashboard-charts {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ─── Product detail ─────────────────────────── */
+  .product-detail-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .product-detail-reviews {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ─── Checkout ───────────────────────────────── */
+  .checkout-wrapper { max-width: 100% !important; }
+
+  /* ─── Perfil ─────────────────────────────────── */
+  .profile-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ─── Docs ───────────────────────────────────── */
+  .docs-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .docs-sidebar {
+    position: static !important;
+  }
+
+  /* ─── Paginación ─────────────────────────────── */
+  .pagination { padding: 1rem; gap: 3px; }
+  .page-btn { min-width: 30px; height: 30px; font-size: 0.8rem; }
+
+  /* ─── Botones grandes en móvil ───────────────── */
+  .btn { min-height: 40px; }
+  .btn-lg { min-height: 48px; font-size: 0.9rem; }
+}
+
+@media (max-width: 480px) {
+  .product-grid { grid-template-columns: 1fr; }
+  .features-grid { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .hero h1 { font-size: 1.7rem; }
+  nav { padding: 0 0.75rem; }
+}

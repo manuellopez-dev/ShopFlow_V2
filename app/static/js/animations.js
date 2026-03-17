@@ -123,3 +123,32 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+// ─── Navbar hamburguesa ───────────────────────────────
+const hamburger  = document.getElementById("nav-hamburger");
+const navLinks   = document.querySelector(".nav-links");
+
+if (hamburger && navLinks) {
+  hamburger.addEventListener("click", () => {
+    navLinks.classList.toggle("open");
+    const icon = hamburger.querySelector("i");
+    const isOpen = navLinks.classList.contains("open");
+    icon.setAttribute("data-lucide", isOpen ? "x" : "menu");
+    lucide.createIcons();
+  });
+}
+
+// ─── Toggle filtros catálogo en móvil ─────────────────
+const filterToggle  = document.getElementById("filter-toggle");
+const catalogSidebar = document.querySelector(".catalog-sidebar");
+
+if (filterToggle && catalogSidebar) {
+  filterToggle.addEventListener("click", () => {
+    catalogSidebar.classList.toggle("open");
+    const isOpen = catalogSidebar.classList.contains("open");
+    filterToggle.innerHTML = isOpen
+      ? '<i data-lucide="x" style="width:14px;height:14px;"></i> Ocultar filtros'
+      : '<i data-lucide="filter" style="width:14px;height:14px;"></i> Filtros y búsqueda';
+    lucide.createIcons();
+  });
+}
