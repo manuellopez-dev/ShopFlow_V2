@@ -3,39 +3,182 @@
 
 {% block content %}
 <div class="auth-wrapper">
-  <div class="auth-card">
-    <div class="auth-logo">
-      <div class="auth-logo-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-          <line x1="3" y1="6" x2="21" y2="6"/>
-          <path d="M16 10a4 4 0 0 1-8 0"/>
-        </svg>
+  <div style="display:grid; grid-template-columns:1fr 1fr;
+              width:100%; height:100%;
+              max-height:calc(100vh - var(--nav-height) - 2rem);
+              background:var(--surface); border-radius:var(--radius-xl);
+              overflow:hidden; box-shadow:var(--shadow-lg); border:1px solid var(--border);">
+
+    <!-- Panel izquierdo: formulario -->
+    <div style="padding:2rem; display:flex; flex-direction:column; justify-content:center; overflow-y:auto;">
+      <div style="margin-bottom:1.5rem;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:1.25rem;">
+          <div style="width:34px; height:34px; background:var(--primary); border-radius:10px;
+                      display:flex; align-items:center; justify-content:center;
+                      box-shadow:var(--shadow-blue);">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                 stroke="white" stroke-width="2.5" style="width:17px;height:17px;">
+              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
+          </div>
+          <span style="font-family:'Plus Jakarta Sans',sans-serif; font-size:1.2rem;
+                       font-weight:800; color:var(--accent);">
+            Shop<span style="color:var(--primary);">Flow</span>
+          </span>
+        </div>
+        <h1 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:1.5rem;
+                   font-weight:800; color:var(--accent); margin-bottom:0.35rem;">
+          Crea tu cuenta
+        </h1>
+        <p style="color:var(--text-muted); font-size:0.875rem;">
+          Únete a ShopFlow y empieza a comprar hoy
+        </p>
       </div>
-      <h1>Shop<span>Flow</span></h1>
-      <p>Crea tu cuenta gratis</p>
+
+      <form method="POST" novalidate>
+        <div class="form-group">
+          <label>Nombre completo</label>
+          <div style="position:relative;">
+            <i data-lucide="user" style="position:absolute; left:12px; top:50%;
+               transform:translateY(-50%); width:16px; height:16px; stroke:var(--text-muted);"></i>
+            <input type="text" name="name" required placeholder="Luis López"
+                   autofocus style="padding-left:2.5rem;">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Correo electrónico</label>
+          <div style="position:relative;">
+            <i data-lucide="mail" style="position:absolute; left:12px; top:50%;
+               transform:translateY(-50%); width:16px; height:16px; stroke:var(--text-muted);"></i>
+            <input type="email" name="email" required placeholder="tu@correo.com"
+                   style="padding-left:2.5rem;">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Contraseña</label>
+          <div style="position:relative;">
+            <i data-lucide="lock" style="position:absolute; left:12px; top:50%;
+               transform:translateY(-50%); width:16px; height:16px; stroke:var(--text-muted);"></i>
+            <input type="password" name="password" id="password-input" required
+                   placeholder="Mínimo 8 caracteres"
+                   style="padding-left:2.5rem; padding-right:2.5rem;"
+                   oninput="checkPassword(this.value)">
+            <button type="button" onclick="togglePassword()"
+                    style="position:absolute; right:12px; top:50%; transform:translateY(-50%);
+                           background:none; border:none; cursor:pointer; color:var(--text-muted);">
+              <i data-lucide="eye" id="eye-icon" style="width:16px;height:16px;"></i>
+            </button>
+          </div>
+          <div style="margin-top:8px; display:flex; gap:4px;">
+            <div class="strength-bar" id="bar1"></div>
+            <div class="strength-bar" id="bar2"></div>
+            <div class="strength-bar" id="bar3"></div>
+            <div class="strength-bar" id="bar4"></div>
+          </div>
+          <div id="strength-text" style="font-size:0.72rem; margin-top:4px; color:var(--text-muted);"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full btn-lg" style="margin-top:0.5rem;">
+          <i data-lucide="user-plus" style="width:16px;height:16px;"></i>
+          Crear cuenta gratis
+        </button>
+      </form>
+
+      <div style="text-align:center; margin-top:1.25rem; padding-top:1.25rem;
+                  border-top:1px solid var(--border); font-size:0.875rem; color:var(--text-muted);">
+        ¿Ya tienes cuenta?
+        <a href="{{ url_for('auth.login') }}"
+           style="color:var(--primary); font-weight:600; text-decoration:none; margin-left:4px;">
+          Inicia sesión
+        </a>
+      </div>
     </div>
-    <form method="POST" novalidate>
-      <div class="form-group">
-        <label>Nombre completo</label>
-        <input type="text" name="name" required placeholder="Luis López" autofocus>
+
+    <!-- Panel derecho decorativo -->
+    <div style="background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 60%,#2563eb 100%);
+                padding:2rem; display:flex; flex-direction:column; justify-content:center;
+                position:relative; overflow:hidden;">
+      <div style="position:absolute; top:-60px; left:-60px; width:200px; height:200px;
+                  background:rgba(255,255,255,0.05); border-radius:50%;"></div>
+      <div style="position:absolute; bottom:-80px; right:-40px; width:250px; height:250px;
+                  background:rgba(255,255,255,0.04); border-radius:50%;"></div>
+
+      <div style="position:relative; z-index:1;">
+        <h2 style="color:white; font-family:'Plus Jakarta Sans',sans-serif;
+                   font-size:1.5rem; font-weight:800; line-height:1.2; margin-bottom:0.75rem;">
+          Todo lo que necesitas<br>
+          <span style="background:linear-gradient(135deg,#60a5fa,#a78bfa);
+                       -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+                       background-clip:text;">en un solo lugar</span>
+        </h2>
+        <p style="color:#94a3b8; font-size:0.85rem; line-height:1.6; margin-bottom:1.5rem;">
+          Crea tu cuenta y accede a cientos de productos con los mejores precios.
+        </p>
+
+        <div style="display:flex; flex-direction:column; gap:0.85rem;">
+          {% for icon, title, desc in [
+            ('shopping-bag','Catálogo completo','Miles de productos en todas las categorías'),
+            ('credit-card','Pagos seguros','Stripe y PayPal con encriptación SSL'),
+            ('package','Seguimiento','Rastrea tus pedidos en tiempo real'),
+            ('heart','Favoritos','Guarda los productos que más te gustan'),
+          ] %}
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div style="width:34px; height:34px; background:rgba(255,255,255,0.1);
+                        border-radius:10px; display:flex; align-items:center; justify-content:center;
+                        flex-shrink:0;">
+              <i data-lucide="{{ icon }}" style="width:15px;height:15px;stroke:#60a5fa;"></i>
+            </div>
+            <div>
+              <div style="color:white; font-size:0.82rem; font-weight:600;">{{ title }}</div>
+              <div style="color:#64748b; font-size:0.72rem;">{{ desc }}</div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
       </div>
-      <div class="form-group">
-        <label>Correo electrónico</label>
-        <input type="email" name="email" required placeholder="tu@correo.com">
-      </div>
-      <div class="form-group">
-        <label>Contraseña</label>
-        <input type="password" name="password" required placeholder="Mínimo 8 caracteres">
-      </div>
-      <button type="submit" class="btn btn-primary btn-full btn-lg">
-        Crear cuenta
-      </button>
-    </form>
-    <div class="auth-footer">
-      ¿Ya tienes cuenta?
-      <a href="{{ url_for('auth.login') }}">Inicia sesión</a>
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function togglePassword() {
+  const input = document.getElementById("password-input");
+  const icon  = document.getElementById("eye-icon");
+  const isPass = input.type === "password";
+  input.type = isPass ? "text" : "password";
+  icon.setAttribute("data-lucide", isPass ? "eye-off" : "eye");
+  lucide.createIcons();
+}
+
+function checkPassword(val) {
+  const bars  = [1,2,3,4].map(i => document.getElementById("bar" + i));
+  const text  = document.getElementById("strength-text");
+  const len   = val.length;
+  const hasNum = /\d/.test(val);
+  const hasSym = /[^a-zA-Z0-9]/.test(val);
+  const hasUpp = /[A-Z]/.test(val);
+
+  let strength = 0;
+  if (len >= 8) strength++;
+  if (hasNum)   strength++;
+  if (hasSym)   strength++;
+  if (hasUpp)   strength++;
+
+  const colors = ["#dc2626","#d97706","#2563eb","#059669"];
+  const labels = ["Muy débil","Regular","Buena","Muy segura"];
+
+  bars.forEach((bar, i) => {
+    bar.style.background = i < strength ? colors[strength - 1] : "var(--border)";
+  });
+
+  text.textContent = len > 0 ? labels[strength - 1] || "" : "";
+  text.style.color = len > 0 ? colors[strength - 1] : "var(--text-muted)";
+}
+</script>
 {% endblock %}

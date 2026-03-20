@@ -203,11 +203,12 @@ nav {
 /* ─── Main ───────────────────────────────────────── */
 main {
   flex: 1;
+  display: flex;
+  flex-direction: column;
   padding: 2.5rem 2rem;
   max-width: 1280px;
   margin: 0 auto;
   width: 100%;
-  overflow-x: hidden;
 }
 
 /* ─── Alerts ─────────────────────────────────────── */
@@ -590,12 +591,12 @@ tbody tr:hover td { background: var(--surface2); }
 
 /* ─── Auth Forms ─────────────────────────────────── */
 .auth-wrapper {
-  min-height: calc(100vh - var(--nav-height));
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
-  background: linear-gradient(135deg, var(--bg) 0%, var(--bg2) 100%);
+  padding: 1rem;
+  background: var(--bg);
 }
 
 .auth-card {
@@ -2109,4 +2110,171 @@ body.dark .role-autenticado { background: rgba(217,119,6,0.15); color: #fbbf24; 
 body.dark .modal-box {
   background: var(--surface);
   border-color: var(--border);
+}
+
+/* ─── Auth mejorado ──────────────────────────────── */
+.strength-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  transition: background 0.3s ease;
+}
+
+@media (max-width: 640px) {
+  .auth-wrapper > div {
+    grid-template-columns: 1fr !important;
+  }
+  .auth-wrapper > div > div:first-child {
+    display: none !important;
+  }
+}
+
+/* ─── Animaciones catálogo ───────────────────────── */
+.product-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  animation: cardFadeIn 0.4s ease both;
+}
+
+@keyframes cardFadeIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.product-grid .product-card:nth-child(1)  { animation-delay: 0.03s; }
+.product-grid .product-card:nth-child(2)  { animation-delay: 0.06s; }
+.product-grid .product-card:nth-child(3)  { animation-delay: 0.09s; }
+.product-grid .product-card:nth-child(4)  { animation-delay: 0.12s; }
+.product-grid .product-card:nth-child(5)  { animation-delay: 0.15s; }
+.product-grid .product-card:nth-child(6)  { animation-delay: 0.18s; }
+.product-grid .product-card:nth-child(7)  { animation-delay: 0.21s; }
+.product-grid .product-card:nth-child(8)  { animation-delay: 0.24s; }
+
+.product-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Imagen con zoom al hover */
+.product-img {
+  overflow: hidden;
+}
+
+.product-img img {
+  transition: transform 0.4s ease;
+}
+
+.product-card:hover .product-img img {
+  transform: scale(1.08);
+}
+
+/* Icono cuando no hay imagen */
+.product-img i,
+.product-img svg {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.product-card:hover .product-img i,
+.product-card:hover .product-img svg {
+  transform: scale(1.15);
+  opacity: 0.8;
+}
+
+/* Botón agregar animado */
+.product-actions .btn-primary {
+  transition: all 0.2s ease;
+}
+
+.product-card:hover .product-actions .btn-primary {
+  background: var(--primary-dark);
+}
+
+/* Precio con color al hover */
+.product-card:hover .product-price {
+  color: var(--primary);
+  transition: color 0.2s ease;
+}
+
+/* Badge de categoría animado */
+.product-cat {
+  transition: color 0.2s ease;
+}
+
+.product-card:hover .product-cat {
+  color: var(--primary);
+}
+
+/* Corazón de favorito animado */
+.product-actions .btn-outline:first-child {
+  transition: all 0.2s ease;
+}
+
+.product-actions .btn-outline:first-child:hover {
+  background: var(--danger-bg);
+  border-color: var(--danger);
+  color: var(--danger);
+  transform: scale(1.1);
+}
+
+/* Sidebar filtros animado */
+.cat-filter-link {
+  transition: all 0.15s ease;
+  transform-origin: left;
+}
+
+.cat-filter-link:hover {
+  transform: translateX(4px);
+}
+
+.cat-filter-link.active {
+  transform: translateX(4px);
+}
+
+/* Botones de ordenamiento */
+.btn-sm {
+  transition: all 0.2s ease;
+}
+
+/* Shimmer en skeleton mientras carga */
+.product-img::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255,255,255,0.1) 50%,
+    transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmerMove 2s infinite;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+@keyframes shimmerMove {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+/* Contador de productos animado */
+.page-header p {
+  animation: fadeInLeft 0.5s ease both 0.2s;
+}
+
+@keyframes fadeInLeft {
+  from { opacity: 0; transform: translateX(-10px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Empty state animado */
+.empty-state {
+  animation: cardFadeIn 0.5s ease both;
+}
+
+.empty-icon {
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
 }
