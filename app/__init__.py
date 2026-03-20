@@ -1,5 +1,5 @@
 import os
-from flask import Flask, app
+from flask import Flask, app, render_template
 from config import config_map
 from app.extensions import db, jwt, bcrypt, mail, migrate, limiter
 from app.routes.payments import payments_bp
@@ -70,12 +70,13 @@ def create_app(env: str = None) -> Flask:
         flash("Demasiados intentos fallidos. Espera un momento antes de intentar de nuevo.", "danger")
         return redirect(url_for("auth.login")), 302
 
+    # ─── Error handlers ───────────────────────────────────
     @app.errorhandler(404)
     def not_found(e):
-        return rt("errors/404.html"), 404
+        return render_template("errors/404.html"), 404
 
     @app.errorhandler(500)
     def server_error(e):
-        return rt("errors/500.html"), 500
+        return render_template("errors/500.html"), 500
 
     return app

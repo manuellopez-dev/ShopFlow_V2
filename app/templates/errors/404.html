@@ -2,19 +2,29 @@
 {% block title %}404 — Página no encontrada{% endblock %}
 
 {% block content %}
-<div style="text-align:center; padding:5rem 2rem;">
-  <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:6rem;
-              font-weight:800; color:var(--primary); line-height:1; margin-bottom:1rem;">
+<div style="text-align:center; padding:5rem 2rem; max-width:500px; margin:0 auto;">
+  <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:7rem; font-weight:800;
+              color:var(--primary); line-height:1; margin-bottom:1rem; opacity:0.15;">
     404
   </div>
-  <h2 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:1.5rem;
-             font-weight:700; margin-bottom:1rem;">Página no encontrada</h2>
-  <p style="color:var(--text-muted); margin-bottom:2rem;">
+  <div style="width:80px; height:80px; background:var(--primary-light); border-radius:50%;
+              display:flex; align-items:center; justify-content:center; margin:0 auto 1.5rem;">
+    <i data-lucide="search-x" style="width:36px;height:36px;stroke:var(--primary);"></i>
+  </div>
+  <h1 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:1.75rem; font-weight:800;
+             margin-bottom:0.75rem;">Página no encontrada</h1>
+  <p style="color:var(--text-muted); margin-bottom:2rem; line-height:1.7;">
     La página que buscas no existe o fue movida.
   </p>
-  <a href="{{ url_for('main.index') }}" class="btn btn-primary btn-lg">
-    <i data-lucide="home" style="width:16px;height:16px;"></i>
-    Volver al inicio
-  </a>
+  <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+    <a href="{{ url_for('main.index') }}" class="btn btn-primary btn-lg">
+      <i data-lucide="home" style="width:16px;height:16px;"></i>
+      Ir al inicio
+    </a>
+    <a href="javascript:history.back()" class="btn btn-outline btn-lg">
+      <i data-lucide="arrow-left" style="width:16px;height:16px;"></i>
+      Volver
+    </a>
+  </div>
 </div>
 {% endblock %}

@@ -164,6 +164,20 @@ def checkout():
                 coupon.used_count += 1
 
         db.session.commit()
+        db.session.commit()
+
+        # ─── Notificar a vendors ──────────────────────
+        try:
+            from app.utils.email import send_vendor_sale_email
+            vendors_notified = set()
+            for item in order.items:
+                vendor = item.product.vendor
+                if vendor and vendor.id not in vendors_notified:
+                    send_vendor_sale_email(vendor, order)
+                    vendors_notified.add(vendor.id)
+        except Exception as e:
+            print(f"[EMAIL VENDOR] {e}")
+
         session.pop("cart", None)
         session.pop("coupon_code", None)
         session.pop("coupon_discount", None)

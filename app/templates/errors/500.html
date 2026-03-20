@@ -2,19 +2,29 @@
 {% block title %}500 — Error del servidor{% endblock %}
 
 {% block content %}
-<div style="text-align:center; padding:5rem 2rem;">
-  <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:6rem;
-              font-weight:800; color:var(--danger); line-height:1; margin-bottom:1rem;">
+<div style="text-align:center; padding:5rem 2rem; max-width:500px; margin:0 auto;">
+  <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:7rem; font-weight:800;
+              color:var(--danger); line-height:1; margin-bottom:1rem; opacity:0.15;">
     500
   </div>
-  <h2 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:1.5rem;
-             font-weight:700; margin-bottom:1rem;">Error del servidor</h2>
-  <p style="color:var(--text-muted); margin-bottom:2rem;">
-    Algo salió mal. Intenta de nuevo en unos momentos.
+  <div style="width:80px; height:80px; background:var(--danger-bg); border-radius:50%;
+              display:flex; align-items:center; justify-content:center; margin:0 auto 1.5rem;">
+    <i data-lucide="server-crash" style="width:36px;height:36px;stroke:var(--danger);"></i>
+  </div>
+  <h1 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:1.75rem; font-weight:800;
+             margin-bottom:0.75rem;">Error del servidor</h1>
+  <p style="color:var(--text-muted); margin-bottom:2rem; line-height:1.7;">
+    Algo salió mal en el servidor. Ya estamos trabajando en ello.
   </p>
-  <a href="{{ url_for('main.index') }}" class="btn btn-primary btn-lg">
-    <i data-lucide="home" style="width:16px;height:16px;"></i>
-    Volver al inicio
-  </a>
+  <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+    <a href="{{ url_for('main.index') }}" class="btn btn-primary btn-lg">
+      <i data-lucide="home" style="width:16px;height:16px;"></i>
+      Ir al inicio
+    </a>
+    <button onclick="location.reload()" class="btn btn-outline btn-lg">
+      <i data-lucide="refresh-cw" style="width:16px;height:16px;"></i>
+      Reintentar
+    </button>
+  </div>
 </div>
 {% endblock %}

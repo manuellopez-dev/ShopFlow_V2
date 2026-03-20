@@ -39,10 +39,12 @@
             <a href="{{ url_for('vendor.edit_product', product_id=p.id) }}"
                class="btn btn-outline btn-sm">Editar</a>
             <a href="{{ url_for('vendor.delete_product', product_id=p.id) }}"
-              class="btn btn-danger btn-sm"
-              data-confirm="¿Deseas desactivar '{{ p.name }}'? Ya no aparecerá en el catálogo.">
-              <i data-lucide="trash-2" style="width:13px;height:13px;"></i>
-            </a>
+   class="btn btn-danger btn-sm"
+   data-confirm="¿Desactivar '{{ p.name }}'? Ya no aparecerá en el catálogo."
+   data-confirm-title="Desactivar producto"
+   data-confirm-btn="Sí, desactivar">
+  <i data-lucide="trash-2" style="width:13px;height:13px;"></i>
+</a>
             <a href="{{ url_for('vendor.manage_discounts', product_id=p.id) }}"
                class="btn btn-outline btn-sm" title="Descuentos por cantidad">
               <i data-lucide="percent" style="width:13px;height:13px;"></i>
