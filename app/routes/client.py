@@ -168,7 +168,7 @@ def checkout():
         session.pop("coupon_code", None)
         session.pop("coupon_discount", None)
         flash(f"Pedido #{order.id} confirmado. ¡Completa tu pago!", "success")
-        return redirect(url_for("client.payment", order_id=order.id))
+        return redirect(url_for("client.shipping", order_id=order.id))
 
     items = []
     total = 0
@@ -287,3 +287,28 @@ def profile():
         total_reviews=total_reviews,
         total_favorites=total_favorites,
     )
+
+@client_bp.route("/orders/<int:order_id>/shipping", methods=["GET", "POST"])
+def shipping(order_id):
+    me = get_user()
+    if not me:
+        return redirect(url_for("auth.login"))
+    order = Order.query.filter_by(id=order_id, client_id=me.id).first_or_404()
+
+    if request.method == "POST":
+        order.shipping_address = request.form.get("address", "").strip()
+        order.shipping_city    = request.form.get("city", "").strip()
+        order.shipping_state   = request.form.get("state", "").strip()
+        order.shipping_zip     = request.form.get("zip_code", "").strip()
+        order.shipping_phone   = request.form.get("phone", "").strip()
+
+        if not all([order.shipping_address, order.shipping_city,
+                    order.shipping_state, order.shipping_phone]):
+            flash("Por favor completa todos los campos requeridos.", "danger")
+            return render_template("client/shipping.html", order=order)
+
+        db.session.commit()
+        flash("Dirección guardada. ¡Completa tu pago!", "success")
+        return redirect(url_for("client.payment", order_id=order.id))
+
+    return render_template("client/shipping.html", order=order)

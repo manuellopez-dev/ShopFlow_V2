@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Dirección de envío — ShopFlow{% endblock %}
+
+{% block content %}
+<div style="max-width:560px; margin:0 auto;">
+  <div class="page-header">
+    <h1>Dirección de envío</h1>
+    <a href="{{ url_for('client.my_orders') }}" class="btn btn-outline btn-sm">← Mis pedidos</a>
+  </div>
+
+  <!-- Progreso -->
+  <div style="display:flex; align-items:center; gap:0; margin-bottom:2rem;">
+    <div style="flex:1; text-align:center;">
+      <div style="width:32px; height:32px; background:var(--success); border-radius:50%;
+                  display:flex; align-items:center; justify-content:center; margin:0 auto 4px;">
+        <i data-lucide="check" style="width:16px;height:16px;stroke:white;"></i>
+      </div>
+      <div style="font-size:0.72rem; color:var(--success); font-weight:600;">Pedido</div>
+    </div>
+    <div style="flex:1; height:2px; background:var(--primary);"></div>
+    <div style="flex:1; text-align:center;">
+      <div style="width:32px; height:32px; background:var(--primary); border-radius:50%;
+                  display:flex; align-items:center; justify-content:center; margin:0 auto 4px;">
+        <i data-lucide="map-pin" style="width:16px;height:16px;stroke:white;"></i>
+      </div>
+      <div style="font-size:0.72rem; color:var(--primary); font-weight:600;">Envío</div>
+    </div>
+    <div style="flex:1; height:2px; background:var(--border);"></div>
+    <div style="flex:1; text-align:center;">
+      <div style="width:32px; height:32px; background:var(--border); border-radius:50%;
+                  display:flex; align-items:center; justify-content:center; margin:0 auto 4px;">
+        <i data-lucide="credit-card" style="width:16px;height:16px;stroke:var(--text-muted);"></i>
+      </div>
+      <div style="font-size:0.72rem; color:var(--text-muted); font-weight:600;">Pago</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:1rem; font-weight:700;
+               margin-bottom:1.5rem; display:flex; align-items:center; gap:8px;">
+      <i data-lucide="map-pin" style="width:18px;height:18px;stroke:var(--primary);"></i>
+      Datos de envío — Pedido #{{ order.id }}
+    </h3>
+
+    <form method="POST">
+      <div class="form-group">
+        <label>Dirección <span style="color:var(--danger);">*</span></label>
+        <input type="text" name="address" required
+               placeholder="Calle, número, colonia"
+               value="{{ order.shipping_address or '' }}">
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+        <div class="form-group">
+          <label>Ciudad <span style="color:var(--danger);">*</span></label>
+          <input type="text" name="city" required
+                 placeholder="Ciudad"
+                 value="{{ order.shipping_city or '' }}">
+        </div>
+        <div class="form-group">
+          <label>Estado <span style="color:var(--danger);">*</span></label>
+          <input type="text" name="state" required
+                 placeholder="Estado"
+                 value="{{ order.shipping_state or '' }}">
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+        <div class="form-group">
+          <label>Código postal</label>
+          <input type="text" name="zip_code"
+                 placeholder="12345"
+                 value="{{ order.shipping_zip or '' }}">
+        </div>
+        <div class="form-group">
+          <label>Teléfono <span style="color:var(--danger);">*</span></label>
+          <input type="tel" name="phone" required
+                 placeholder="442 123 4567"
+                 value="{{ order.shipping_phone or '' }}">
+        </div>
+      </div>
+
+      <div style="background:var(--primary-light); border-radius:var(--radius);
+                  padding:0.85rem 1rem; margin-bottom:1.25rem; font-size:0.85rem;
+                  color:var(--primary); display:flex; align-items:center; gap:8px;">
+        <i data-lucide="info" style="width:16px;height:16px;flex-shrink:0;"></i>
+        Total del pedido: <strong>${{ "%.2f"|format(order.total) }} MXN</strong>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-full btn-lg">
+        <i data-lucide="arrow-right" style="width:16px;height:16px;"></i>
+        Continuar al pago
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

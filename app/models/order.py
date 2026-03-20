@@ -64,6 +64,11 @@ class Order(db.Model):
     created_at     = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at     = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc),
                                onupdate=lambda: datetime.now(timezone.utc))
+    shipping_address = db.Column(db.String(500), nullable=True)
+    shipping_city    = db.Column(db.String(100), nullable=True)
+    shipping_state   = db.Column(db.String(100), nullable=True)
+    shipping_zip     = db.Column(db.String(20),  nullable=True)
+    shipping_phone   = db.Column(db.String(20),  nullable=True)
 
     client = db.relationship("User",      back_populates="orders")
     items  = db.relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")

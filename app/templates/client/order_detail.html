@@ -34,6 +34,24 @@
     </div>
   </div>
 
+  {% if order.shipping_address %}
+  <div class="card" style="margin-bottom:1.25rem;">
+    <h3 style="font-size:0.875rem; font-weight:700; margin-bottom:1rem;
+               display:flex; align-items:center; gap:8px;">
+      <i data-lucide="map-pin" style="width:16px;height:16px;stroke:var(--primary);"></i>
+      Dirección de envío
+    </h3>
+    <div style="color:var(--text-muted); font-size:0.875rem; line-height:1.8;">
+      <div>{{ order.shipping_address }}</div>
+      <div>{{ order.shipping_city }}, {{ order.shipping_state }} {{ order.shipping_zip }}</div>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <i data-lucide="phone" style="width:14px;height:14px;"></i>
+        {{ order.shipping_phone }}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
   <div class="card" style="padding:0; margin-bottom:1.25rem;">
     <div class="table-wrapper">
       <table>
@@ -67,9 +85,14 @@
 
     {% if order.payment_status != 'paid' %}
     <div class="divider"></div>
-    <a href="{{ url_for('client.payment', order_id=order.id) }}"
+    <a href="{{ url_for('client.shipping', order_id=order.id) }}"
        class="btn btn-primary btn-full btn-lg">
-      💳 Pagar ahora
+      <i data-lucide="map-pin" style="width:16px;height:16px;"></i>
+      {% if order.shipping_address %}
+        Actualizar dirección y pagar
+      {% else %}
+        Ingresar dirección y pagar
+      {% endif %}
     </a>
     {% endif %}
   </div>
