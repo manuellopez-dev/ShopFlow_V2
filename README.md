@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0d1117,50:1a1a2e,100:6DB33F&height=140&section=header&text=ShopFlow&fontSize=48&fontColor=ffffff&fontAlignY=65&animation=fadeIn" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0f172a,50:1e3a8a,100:2563eb&height=140&section=header&text=ShopFlow&fontSize=48&fontColor=ffffff&fontAlignY=65&animation=fadeIn" width="100%"/>
 
 ### Plataforma E-Commerce Full Stack con RBAC, 2FA y Pagos Reales
 
@@ -15,7 +15,7 @@
 ![Stripe](https://img.shields.io/badge/Stripe-635BFF?style=for-the-badge&logo=stripe&logoColor=white)
 ![PayPal](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)
 
-[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-6DB33F?style=for-the-badge)](https://shopflow.pythonanywhere.com)
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-2563eb?style=for-the-badge)](https://shopflow-v2.onrender.com)
 [![Repo](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/manuellopez-dev/ShopFlow_V2)
 
 </div>
@@ -26,59 +26,76 @@
 
 ShopFlow es una plataforma de comercio electrónico Full Stack desarrollada con Python y Flask, orientada a pequeñas y medianas empresas que necesitan un sistema seguro, con roles diferenciados y pagos reales integrados.
 
-El proyecto implementa patrones de seguridad de nivel profesional: autenticación con JWT y refresh tokens rotativos, doble factor de autenticación (2FA) con Google Authenticator, control de acceso basado en roles (RBAC) y protección contra fuerza bruta con rate limiting.
+El proyecto implementa patrones de seguridad de nivel profesional: autenticación con JWT y refresh tokens, doble factor de autenticación (2FA) con Google Authenticator, control de acceso basado en roles (RBAC) y protección contra fuerza bruta con rate limiting.
 
 ---
 
 ## ✨ Funcionalidades por módulo
 
 ### 🔐 Autenticación y Seguridad
-- Registro y login con JWT de corta duración + refresh token rotativo
+- Registro y login con JWT de corta duración + refresh token
 - **2FA obligatorio para Administrador** — TOTP con `pyotp`, compatible con Google Authenticator
 - Recuperación de contraseña con token de un solo uso (TTL: 15 minutos) vía email
-- Contraseñas hasheadas con `bcrypt` (salt rounds ≥ 12)
-- Rate limiting en endpoints de auth con `Flask-Limiter` para mitigar fuerza bruta
-- Cabeceras de seguridad HTTP con `Flask-Talisman` + HTTPS forzado en producción
+- Contraseñas hasheadas con `bcrypt`
+- Rate limiting en endpoints de auth con `Flask-Limiter`
 - Variables de entorno con `python-dotenv`, nunca versionadas en el repositorio
+- Indicador de fortaleza de contraseña en el registro
 
 ### 👥 Control de Acceso por Roles (RBAC)
 
 | Rol | Acceso |
 |---|---|
-| **Administrador** | Gestión total: usuarios, productos, pedidos, cupones, reportes y configuración |
-| **Vendedor** | Alta y edición de sus productos, visualización de pedidos asignados |
-| **Cliente** | Catálogo, carrito, pagos, favoritos, historial de pedidos y reseñas |
-
-Cada rol está protegido con decoradores personalizados en Flask que verifican permisos en cada ruta.
+| **Administrador** | Gestión total: usuarios, categorías, pedidos, cupones, dashboard con estadísticas y gráficas |
+| **Vendedor** | Crear y editar productos, descuentos por cantidad, historial de precios, dashboard de ventas |
+| **Cliente** | Catálogo con filtros, carrito, cupones, pagos, favoritos, reseñas, historial de pedidos y perfil |
 
 ### 🛍️ Catálogo y Tienda
-- Catálogo de productos con categorías, imágenes, precio y stock
+- Catálogo de productos con búsqueda en tiempo real, filtros por categoría, precio y ordenamiento
+- Imágenes de productos (URL o subida desde PC)
 - Sistema de favoritos por cliente
-- Comentarios y calificaciones en productos
-- Reglas de stock automáticas — alerta cuando el inventario está bajo
-- Búsqueda y filtros por categoría, precio y disponibilidad
+- Reseñas con calificación de estrellas (1-5) e indicador interactivo
+- Descuentos por cantidad configurables por el vendedor
+- Alertas automáticas de stock bajo por email
+- Productos relacionados en la vista de detalle
 
 ### 🛒 Carrito y Pedidos
-- Carrito persistente por sesión de usuario
-- Aplicación de cupones de descuento con validación de vigencia y límite de usos
-- Gestión completa de pedidos con estados rastreables
-- Historial de compras por cliente
+- Carrito persistente por sesión
+- Aplicación de cupones con validación de vigencia, tipo (porcentaje/monto fijo) y límite de usos
+- Flujo de compra: Carrito → Checkout → **Dirección de envío** → Pago
+- Gestión de estados de pedido: Pendiente → Confirmado → Enviado → Entregado → Cancelado
+- Historial de pedidos con detalle completo y dirección de envío
+- Paginación en todas las tablas
 
 ### 💳 Pagos
-- **Stripe** — pagos con tarjeta de crédito/débito
-- **PayPal** — checkout con cuenta PayPal
-- Webhooks para confirmación automática de pagos
-- Manejo de errores y pagos fallidos
+- **Stripe** — campos separados para número, fecha y CVC con validación en tiempo real
+- **PayPal** — redirección al sandbox de PayPal
+- Confirmación automática del pago y cambio de estado del pedido
+- Notificación por email al cliente y al vendedor al completar una compra
 
-### 📊 Dashboard y Reportes (Admin)
-- Gráficas de ventas por período (diario, semanal, mensual)
-- Producto más vendido, vendedor más activo
-- Exportación de reportes
+### 📧 Notificaciones por Email
+- Recuperación de contraseña con enlace seguro
+- Actualización de estado de pedido al cliente
+- Nueva venta al vendedor con detalle de productos
+- Alerta de stock bajo al vendedor
+- Templates HTML diseñados con gradientes y estilos profesionales
+
+### 📊 Dashboards
+- **Admin:** estadísticas globales, ingresos últimos 7 días, pedidos por estado (dona), productos más vendidos (barras), pedidos recientes
+- **Vendor:** productos activos, unidades vendidas, ingresos totales, alerta de stock bajo, ventas últimos 7 días, productos más vendidos, ventas recientes
 
 ### 🌙 UI/UX
-- Modo oscuro / modo claro con toggle persistente
-- Diseño responsive con HTML5 + CSS3 + JavaScript vanilla
-- Plantillas renderizadas en servidor con Jinja2
+- Modo oscuro / modo claro con toggle persistente en `localStorage`
+- Diseño responsive completo con navbar hamburguesa en móvil
+- Toast notifications (ventanas flotantes) para mensajes del sistema
+- Modales de confirmación antes de acciones destructivas
+- Animaciones en catálogo: fade in, zoom en hover, stagger por card
+- Páginas de error 404 y 500 personalizadas
+- Indicador de progreso en el flujo de compra (Pedido → Envío → Pago)
+
+### 📚 Documentación
+- Manual de usuario con guías por rol y preguntas frecuentes
+- Documentación de API con endpoints, métodos, parámetros y roles requeridos
+- Diagrama de base de datos con tablas, relaciones PK/FK y tipos de datos
 
 ---
 
@@ -87,40 +104,74 @@ Cada rol está protegido con decoradores personalizados en Flask que verifican p
 | Capa | Tecnología | Propósito |
 |---|---|---|
 | Frontend | HTML5 + CSS3 + JS + Jinja2 | Vistas renderizadas en servidor |
+| Iconos | Lucide Icons | Iconografía moderna y consistente |
+| Gráficas | Chart.js | Dashboards interactivos |
 | Backend | Python 3 + Flask | Rutas, lógica de negocio y seguridad |
 | Base de datos | MySQL + SQLAlchemy | ORM y almacenamiento relacional |
 | Autenticación | Flask-JWT-Extended + Flask-Bcrypt | Tokens JWT y hashing de contraseñas |
 | 2FA | pyotp + qrcode | TOTP compatible con Google Authenticator |
 | Pagos | Stripe + PayPal SDK | Procesamiento de pagos reales |
-| Email | Flask-Mail + Gmail SMTP | Recuperación de contraseña y notificaciones |
-| Seguridad | Flask-Talisman + Flask-Limiter | Cabeceras HTTP y rate limiting |
-| Despliegue | PythonAnywhere / Render | Hosting cloud con soporte nativo Flask |
+| Email | Flask-Mail + Gmail SMTP | Notificaciones automáticas |
+| Seguridad | Flask-Limiter + Flask-WTF | Rate limiting y protección CSRF |
+| Despliegue | Render.com + filess.io | Hosting cloud con BD MySQL externa |
 
 ---
 
 ## 🏗️ Arquitectura del proyecto
-
 ```
 ShopFlow_V2/
 ├── app/
-│   ├── __init__.py          # Factory pattern, inicialización de Flask
-│   ├── models/              # Modelos SQLAlchemy (User, Product, Order, Coupon...)
-│   ├── routes/              # Blueprints por módulo (auth, shop, admin, vendedor)
-│   ├── services/            # Lógica de negocio desacoplada de las rutas
-│   ├── decorators/          # Decoradores de roles y autenticación
-│   ├── templates/           # Plantillas Jinja2
-│   └── static/              # CSS, JS, imágenes
-├── config.py                # Configuración por entorno (dev/prod)
-├── run.py                   # Punto de entrada
+│   ├── __init__.py           # Factory pattern, inicialización de Flask
+│   ├── extensions.py         # Extensiones Flask (db, jwt, mail, etc.)
+│   ├── models/
+│   │   ├── user.py           # Usuario, roles, RBAC
+│   │   ├── product.py        # Producto, reseñas, favoritos, descuentos
+│   │   ├── order.py          # Pedido, items, cupones
+│   │   └── category.py       # Categorías
+│   ├── routes/
+│   │   ├── auth.py           # Login, registro, 2FA, reset password
+│   │   ├── admin.py          # Dashboard admin, usuarios, pedidos, categorías
+│   │   ├── vendor.py         # Dashboard vendor, productos, descuentos
+│   │   ├── client.py         # Catálogo, carrito, checkout, envío, pedidos
+│   │   ├── coupons.py        # Gestión y aplicación de cupones
+│   │   ├── reviews.py        # Reseñas y favoritos
+│   │   └── payments.py       # Stripe y PayPal
+│   ├── utils/
+│   │   ├── email.py          # Templates y envío de emails
+│   │   ├── security.py       # JWT callbacks
+│   │   ├── sanitize.py       # Sanitización de inputs
+│   │   └── decorators.py     # Decoradores de roles
+│   ├── templates/
+│   │   ├── base.html         # Layout principal con navbar dinámico
+│   │   ├── auth/             # Login, register, 2FA, reset password
+│   │   ├── admin/            # Dashboard, usuarios, pedidos, categorías, cupones
+│   │   ├── vendor/           # Dashboard, productos, descuentos, precios
+│   │   ├── client/           # Catálogo, carrito, checkout, envío, pago, perfil
+│   │   ├── main/             # Index, manual, API docs, diagrama BD
+│   │   ├── errors/           # 404, 500
+│   │   └── macros/           # Paginación reutilizable
+│   └── static/
+│       ├── css/style.css     # Design system completo con modo oscuro
+│       └── js/
+│           ├── animations.js      # Scroll reveal, contadores, ripple
+│           ├── ui.js              # Toasts, modales de confirmación
+│           ├── darkmode.js        # Toggle modo oscuro persistente
+│           ├── dashboard.js       # Gráficas admin (Chart.js)
+│           ├── vendor_dashboard.js # Gráficas vendor (Chart.js)
+│           ├── particles-config.js # Partículas en hero
+│           ├── checkout.js        # Aplicación de cupones
+│           ├── payment.js         # Integración Stripe Elements
+│           └── product_detail.js  # Selector de cantidad y star rating
+├── config.py                 # Configuración por entorno (dev/prod)
+├── run.py                    # Punto de entrada
 ├── requirements.txt
-├── Procfile                 # Para despliegue en Render
-└── .env.example             # Variables de entorno de referencia
+├── Procfile                  # Para despliegue en Render
+└── .env.example              # Variables de entorno de referencia
 ```
 
 ---
 
 ## ⚙️ Instalación local
-
 ```bash
 # 1. Clonar el repositorio
 git clone https://github.com/manuellopez-dev/ShopFlow_V2.git
@@ -139,53 +190,70 @@ cp .env.example .env
 # Edita .env con tus credenciales
 
 # 5. Inicializar la base de datos
-flask db upgrade
+python -c "
+from dotenv import load_dotenv; load_dotenv()
+from app import create_app
+from app.extensions import db
+app = create_app()
+with app.app_context():
+    db.create_all()
+    print('Tablas creadas OK')
+"
 
 # 6. Ejecutar
-flask run
+python run.py
 ```
 
 ---
 
 ## 🔑 Variables de entorno requeridas
-
 ```env
-# Base de datos
-DATABASE_URL=mysql+pymysql://user:password@localhost/shopflow
+# Flask
+FLASK_ENV=development
+SECRET_KEY=tu_clave_secreta
+
+# Base de datos MySQL
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=tu_password
+DB_NAME=shopflow
 
 # JWT
-JWT_SECRET_KEY=tu_clave_secreta
+JWT_SECRET_KEY=tu_jwt_secret
 
 # Email (Gmail SMTP)
+MAIL_SERVER=smtp.gmail.com
+MAIL_PORT=587
 MAIL_USERNAME=tu_correo@gmail.com
 MAIL_PASSWORD=tu_app_password
+MAIL_DEFAULT_SENDER=tu_correo@gmail.com
 
 # Stripe
 STRIPE_PUBLIC_KEY=pk_test_...
 STRIPE_SECRET_KEY=sk_test_...
-STRIPE_WEBHOOK_SECRET=whsec_...
 
 # PayPal
 PAYPAL_CLIENT_ID=...
 PAYPAL_CLIENT_SECRET=...
-
-# Entorno
-FLASK_ENV=development
+PAYPAL_MODE=sandbox
 ```
 
 ---
 
 ## 🔒 Seguridad — decisiones técnicas destacadas
 
-**Refresh tokens rotativos** — cada vez que el cliente usa un refresh token para obtener un nuevo access token, el anterior queda invalidado. Esto previene el reuso de tokens robados.
+**JWT + sesión Flask como fallback** — los tokens JWT se almacenan en cookies HTTP-only. Se usa la sesión Flask como fallback para navegadores que no envían cookies en redirects.
 
-**Respuestas genéricas en auth** — los endpoints de login y registro devuelven el mismo mensaje de error independientemente de si el email no existe o la contraseña es incorrecta, evitando user enumeration.
+**Respuestas genéricas en auth** — los endpoints de login devuelven el mismo mensaje de error independientemente del motivo, evitando user enumeration.
 
-**2FA solo para Admin** — el rol con más privilegios requiere TOTP en cada inicio de sesión. Se genera un QR al registrar el admin, compatible con Google Authenticator y Authy.
+**2FA solo para Admin** — el rol con más privilegios requiere TOTP en cada inicio de sesión, compatible con Google Authenticator y Authy.
 
-**Rate limiting por IP** — los endpoints `/login`, `/register` y `/recuperar-password` tienen límite de intentos por IP con `Flask-Limiter`, mitigando ataques de fuerza bruta.
+**Rate limiting por IP** — los endpoints de autenticación tienen límite de intentos con `Flask-Limiter`, mitigando ataques de fuerza bruta.
 
-**Variables de entorno** — ninguna credencial está hardcodeada. El `.env` está en `.gitignore` y el repositorio incluye `.env.example` como referencia.
+**Sanitización de inputs** — todos los inputs del usuario se sanitizan con `bleach` antes de guardarse.
+
+**Variables de entorno** — ninguna credencial está hardcodeada. El `.env` está en `.gitignore`.
 
 ---
 
@@ -197,7 +265,17 @@ FLASK_ENV=development
 | Vendedor | vendor@shopflow.com | Vendor123! |
 | Cliente | luismanuel141205@gmail.com | Client123! |
 
-> El Admin requiere 2FA. Usa Google Authenticator con el QR disponible en el panel de configuración.
+**Stripe test card:** `4242 4242 4242 4242` · Fecha: `12/26` · CVC: `123`
+
+> El Admin requiere 2FA. Configúralo desde el panel de administración con Google Authenticator.
+
+---
+
+## 🌐 Demo en vivo
+
+[https://shopflow-v2.onrender.com](https://shopflow-v2.onrender.com)
+
+> ⚠️ La instancia gratuita de Render puede tardar hasta 50 segundos en despertar si estuvo inactiva.
 
 ---
 
@@ -210,8 +288,11 @@ MIT — libre para usar, modificar y distribuir con atribución.
 <div align="center">
 
 Desarrollado por **Luis Manuel López Cano**
+
+Materia: Desarrollo de Aplicaciones Web · Cuatrimestre 8 · 2026
+
 [GitHub](https://github.com/manuellopez-dev) · [LinkedIn](https://www.linkedin.com/in/luis-manuel-lopez-cano-692984390/) · [manuel.lopez.engineer@gmail.com](mailto:manuel.lopez.engineer@gmail.com)
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:6DB33F,50:1a1a2e,100:0d1117&height=80&section=footer" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:2563eb,50:1e3a8a,100:0f172a&height=80&section=footer" width="100%"/>
 
 </div>
